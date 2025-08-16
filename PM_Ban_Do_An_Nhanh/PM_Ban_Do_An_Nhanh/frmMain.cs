@@ -12,11 +12,17 @@ namespace PM_Ban_Do_An_Nhanh
 {
     public partial class frmMain : Form
     {
+        private TabPage tabPageDanhMuc;
+
         public frmMain()
         {
             InitializeComponent();
             this.Text = "Hệ thống quản lý bán thức ăn nhanh";
             HienThiThongTinNguoiDung();
+
+            
+            tabPageDanhMuc = new TabPage("Danh Mục");
+            tabControlMain.TabPages.Add(tabPageDanhMuc);
         }
 
         private void HienThiThongTinNguoiDung()
@@ -89,6 +95,13 @@ namespace PM_Ban_Do_An_Nhanh
             form.Dock = DockStyle.Fill;
             tabPage.Controls.Add(form);
             form.Show();
+        }
+
+        private void btnDanhMuc_Click(object sender, EventArgs e)
+        {
+            frmDanhMuc danhmucForm = new frmDanhMuc();
+            LoadFormInTabPage(danhmucForm, tabPageDanhMuc);
+            tabControlMain.SelectedTab = tabPageDanhMuc;
         }
     }
 }

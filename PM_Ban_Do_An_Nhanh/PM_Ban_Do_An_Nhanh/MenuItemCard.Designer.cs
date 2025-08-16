@@ -45,17 +45,20 @@ namespace PM_Ban_Do_An_Nhanh
             // lblTitle
             // 
             this.lblTitle.AutoEllipsis = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.lblTitle.Location = new System.Drawing.Point(96, 8);
             this.lblTitle.Name = "lblTitle";
-            this.lblTitle.Size = new System.Drawing.Size(136, 40);
+            this.lblTitle.Size = new System.Drawing.Size(136, 32); // Tăng chiều cao từ 40 lên 32 và điều chỉnh vị trí
             this.lblTitle.TabIndex = 1;
             this.lblTitle.Text = "Tên món";
+            this.lblTitle.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             // 
             // lblPrice
             // 
             this.lblPrice.AutoSize = true;
-            this.lblPrice.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblPrice.Location = new System.Drawing.Point(96, 52);
+            this.lblPrice.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.lblPrice.ForeColor = System.Drawing.Color.FromArgb(220, 53, 69);
+            this.lblPrice.Location = new System.Drawing.Point(96, 42); // Điều chỉnh vị trí
             this.lblPrice.Name = "lblPrice";
             this.lblPrice.Size = new System.Drawing.Size(55, 15);
             this.lblPrice.TabIndex = 2;
@@ -63,26 +66,33 @@ namespace PM_Ban_Do_An_Nhanh
             // 
             // nudQuantity
             // 
+            this.nudQuantity.Font = new System.Drawing.Font("Segoe UI", 8F);
             this.nudQuantity.Location = new System.Drawing.Point(96, 72);
             this.nudQuantity.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             this.nudQuantity.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
             this.nudQuantity.Name = "nudQuantity";
-            this.nudQuantity.Size = new System.Drawing.Size(60, 20);
+            this.nudQuantity.Size = new System.Drawing.Size(50, 22); // Giảm kích thước
             this.nudQuantity.TabIndex = 3;
             this.nudQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(162, 70);
+            this.btnAdd.BackColor = System.Drawing.Color.FromArgb(40, 167, 69);
+            this.btnAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAdd.FlatAppearance.BorderSize = 0;
+            this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.btnAdd.ForeColor = System.Drawing.Color.White;
+            this.btnAdd.Location = new System.Drawing.Point(152, 70); // Điều chỉnh vị trí
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(70, 24);
+            this.btnAdd.Size = new System.Drawing.Size(80, 26); // Điều chỉnh kích thước
             this.btnAdd.TabIndex = 4;
             this.btnAdd.Text = "Thêm";
-            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.UseVisualStyleBackColor = false;
+            this.btnAdd.Cursor = System.Windows.Forms.Cursors.Hand;
             // 
             // MenuItemCard
             // 
-            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.BackColor = System.Drawing.Color.White;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.pbImage);
             this.Controls.Add(this.lblTitle);
@@ -90,7 +100,8 @@ namespace PM_Ban_Do_An_Nhanh
             this.Controls.Add(this.nudQuantity);
             this.Controls.Add(this.btnAdd);
             this.Name = "MenuItemCard";
-            this.Size = new System.Drawing.Size(240, 104);
+            this.Size = new System.Drawing.Size(240, 104); // Giữ nguyên kích thước
+            this.Padding = new System.Windows.Forms.Padding(4);
             ((System.ComponentModel.ISupportInitialize)(this.pbImage)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudQuantity)).EndInit();
             this.ResumeLayout(false);
