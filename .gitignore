@@ -1,0 +1,46 @@
+
+# Visual Studio - common
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+*_i.c
+*_pdb.*
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.exe
+*.dll
+*.cache
+*.log
+
+# Rider/JetBrains
+/.idea/
+*.sln.iml
+
+# Visual Studio Code
+.vscode/
+
+# Resharper
+_ReSharper*/
+*.ReSharper
+
+# NuGet and packages
+# Note: this repo currently contains a `packages/` directory with
+# some packages checked in. We intentionally DO NOT ignore the top-level
+# `packages/` folder so existing package files are preserved. If you
+# prefer to restore packages from NuGet instead of committing them,
+# uncomment the next line.
+# packages/
+
+# Other
+Thumbs.db
+.DS_Store
+*.ide
