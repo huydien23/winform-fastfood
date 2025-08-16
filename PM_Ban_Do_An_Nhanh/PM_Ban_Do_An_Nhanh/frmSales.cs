@@ -10,8 +10,8 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using iTextSharp.text; // Correct namespace for iTextSharp's text-related classes
+using iTextSharp.text.pdf; // Correct namespace for PDF-related classes
 using System.IO;
 
 namespace PM_Ban_Do_An_Nhanh
