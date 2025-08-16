@@ -185,71 +185,44 @@ namespace PM_Ban_Do_An_Nhanh
             this.dgvHoaDon.TabIndex = 3;
             this.dgvHoaDon.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvHoaDon_CellClick);
 
-            // Basic initialization - detailed setup will be done in SetupOrderTab
-            this.lblTongTien = new System.Windows.Forms.Label();
-            this.lblTongTien.Name = "lblTongTien";
-            this.lblTongTien.Text = "0 VNĐ";
-            this.lblTongTien.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTongTien.ForeColor = System.Drawing.Color.White;
+             this.lblTongTien.Text = "0 VNĐ";
+             this.lblTongTien.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
+             this.lblTongTien.ForeColor = System.Drawing.Color.White;
 
-            this.lblTenKhachHang = new System.Windows.Forms.Label();
-            this.lblTenKhachHang.Name = "lblTenKhachHang";
-            this.lblTenKhachHang.Text = "Khách lẻ";
-            this.lblTenKhachHang.Font = new System.Drawing.Font("Segoe UI", 10F);
+             this.lblTenKhachHang.Text = "Khách lẻ";
+             this.lblTenKhachHang.Font = new System.Drawing.Font("Segoe UI", 10F);
 
-            this.txtSDTKhachHang = new System.Windows.Forms.TextBox();
-            this.txtSDTKhachHang.Name = "txtSDTKhachHang";
-            this.txtSDTKhachHang.Font = new System.Drawing.Font("Segoe UI", 12F);
+             this.txtSDTKhachHang.Font = new System.Drawing.Font("Segoe UI", 12F);
 
-            this.txtSearchMenu = new System.Windows.Forms.TextBox();
-            this.txtSearchMenu.Name = "txtSearchMenu";
-            this.txtSearchMenu.Font = new System.Drawing.Font("Segoe UI", 11F);
+             this.txtSearchMenu.Font = new System.Drawing.Font("Segoe UI", 11F);
 
-            // Buttons basic setup
-            this.btnTimKH = new System.Windows.Forms.Button();
-            this.btnTimKH.Name = "btnTimKH";
-            this.btnTimKH.Text = "🔍 Tìm kiếm";
-            this.btnTimKH.Click += new System.EventHandler(this.btnTimKH_Click);
+             // Buttons basic setup
+             this.btnTimKH.Text = "🔍 Tìm kiếm";
+             this.btnTimKH.Click += new System.EventHandler(this.btnTimKH_Click);
 
-            this.btnXoaKH = new System.Windows.Forms.Button();
-            this.btnXoaKH.Name = "btnXoaKH";
-            this.btnXoaKH.Text = "❌ Xóa chọn";
-            this.btnXoaKH.Click += new System.EventHandler(this.btnXoaKH_Click);
+             this.btnXoaKH.Text = "❌ Xóa chọn";
+             this.btnXoaKH.Click += new System.EventHandler(this.btnXoaKH_Click);
 
-            this.btnPlusItem = new System.Windows.Forms.Button();
-            this.btnPlusItem.Name = "btnPlusItem";
-            this.btnPlusItem.Text = "➕";
-            this.btnPlusItem.Click += new System.EventHandler(this.btnPlusItem_Click);
+             this.btnPlusItem.Text = "➕";
+             this.btnPlusItem.Click += new System.EventHandler(this.btnPlusItem_Click);
 
-            this.btnMinusItem = new System.Windows.Forms.Button();
-            this.btnMinusItem.Name = "btnMinusItem";
-            this.btnMinusItem.Text = "➖";
-            this.btnMinusItem.Click += new System.EventHandler(this.btnMinusItem_Click);
+             this.btnMinusItem.Text = "➖";
+             this.btnMinusItem.Click += new System.EventHandler(this.btnMinusItem_Click);
 
-            this.btnRemoveItem = new System.Windows.Forms.Button();
-            this.btnRemoveItem.Name = "btnRemoveItem";
-            this.btnRemoveItem.Text = "🗑️";
-            this.btnRemoveItem.Click += new System.EventHandler(this.btnRemoveItem_Click);
+             this.btnRemoveItem.Text = "🗑️";
+             this.btnRemoveItem.Click += new System.EventHandler(this.btnRemoveItem_Click);
 
-            this.btnThanhToan = new System.Windows.Forms.Button();
-            this.btnThanhToan.Name = "btnThanhToan";
-            this.btnThanhToan.Text = "💳 THANH TOÁN";
-            this.btnThanhToan.Click += new System.EventHandler(this.btnThanhToan_Click);
+             this.btnThanhToan.Text = "💳 THANH TOÁN";
+             this.btnThanhToan.Click += new System.EventHandler(this.btnThanhToan_Click);
 
-            this.btnHuyDon = new System.Windows.Forms.Button();
-            this.btnHuyDon.Name = "btnHuyDon";
-            this.btnHuyDon.Text = "❌ HỦY ĐƠN";
-            this.btnHuyDon.Click += new System.EventHandler(this.btnHuyDon_Click);
+             this.btnHuyDon.Text = "❌ HỦY ĐƠN";
+             this.btnHuyDon.Click += new System.EventHandler(this.btnHuyDon_Click);
 
-            this.btnPrint = new System.Windows.Forms.Button();
-            this.btnPrint.Name = "btnPrint";
-            this.btnPrint.Text = "🖨️ In hóa đơn";
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+             this.btnPrint.Text = "🖨️ In hóa đơn";
+             this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
 
-            this.btnExportPdf = new System.Windows.Forms.Button();
-            this.btnExportPdf.Name = "btnExportPdf";
-            this.btnExportPdf.Text = "📄 Xuất PDF";
-            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+             this.btnExportPdf.Text = "📄 Xuất PDF";
+             this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
 
             // Form properties
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -367,6 +340,7 @@ namespace PM_Ban_Do_An_Nhanh
             headerPanel.Height = 50; // Reduced from 60 to 50
             headerPanel.BackColor = System.Drawing.Color.White;
             headerPanel.Padding = new System.Windows.Forms.Padding(12); // Reduced padding
+            headerPanel.Margin = new System.Windows.Forms.Padding(0, 0, 0, 150); // Thêm margin bottom 15px
 
             System.Windows.Forms.Label titleLabel = new System.Windows.Forms.Label();
             titleLabel.Text = "🛒 ĐƠN HÀNG HIỆN TẠI";
@@ -657,28 +631,25 @@ namespace PM_Ban_Do_An_Nhanh
             searchPanel.BackColor = System.Drawing.Color.White;
             searchPanel.Padding = new System.Windows.Forms.Padding(20);
 
-            this.txtSDTKhachHang = new System.Windows.Forms.TextBox();
-            this.txtSDTKhachHang.Font = new System.Drawing.Font("Segoe UI", 12F);
-            this.txtSDTKhachHang.Size = new System.Drawing.Size(300, 35);
-            this.txtSDTKhachHang.Location = new System.Drawing.Point(20, 15);
+                         this.txtSDTKhachHang.Font = new System.Drawing.Font("Segoe UI", 12F);
+             this.txtSDTKhachHang.Size = new System.Drawing.Size(300, 35);
+             this.txtSDTKhachHang.Location = new System.Drawing.Point(20, 15);
 
-            this.btnTimKH = new System.Windows.Forms.Button();
-            this.btnTimKH.Text = "🔍 Tìm kiếm";
-            this.btnTimKH.Size = new System.Drawing.Size(100, 35);
-            this.btnTimKH.Location = new System.Drawing.Point(330, 15);
-            this.btnTimKH.BackColor = System.Drawing.Color.FromArgb(52, 152, 219);
-            this.btnTimKH.ForeColor = System.Drawing.Color.White;
-            this.btnTimKH.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnTimKH.Click += new System.EventHandler(this.btnTimKH_Click);
+             this.btnTimKH.Text = "🔍 Tìm kiếm";
+             this.btnTimKH.Size = new System.Drawing.Size(100, 35);
+             this.btnTimKH.Location = new System.Drawing.Point(330, 15);
+             this.btnTimKH.BackColor = System.Drawing.Color.FromArgb(52, 152, 219);
+             this.btnTimKH.ForeColor = System.Drawing.Color.White;
+             this.btnTimKH.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+             this.btnTimKH.Click += new System.EventHandler(this.btnTimKH_Click);
 
-            this.btnXoaKH = new System.Windows.Forms.Button();
-            this.btnXoaKH.Text = "❌ Xóa chọn";
-            this.btnXoaKH.Size = new System.Drawing.Size(100, 35);
-            this.btnXoaKH.Location = new System.Drawing.Point(440, 15);
-            this.btnXoaKH.BackColor = System.Drawing.Color.FromArgb(231, 76, 60);
-            this.btnXoaKH.ForeColor = System.Drawing.Color.White;
-            this.btnXoaKH.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnXoaKH.Click += new System.EventHandler(this.btnXoaKH_Click);
+             this.btnXoaKH.Text = "❌ Xóa chọn";
+             this.btnXoaKH.Size = new System.Drawing.Size(100, 35);
+             this.btnXoaKH.Location = new System.Drawing.Point(440, 15);
+             this.btnXoaKH.BackColor = System.Drawing.Color.FromArgb(231, 76, 60);
+             this.btnXoaKH.ForeColor = System.Drawing.Color.White;
+             this.btnXoaKH.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+             this.btnXoaKH.Click += new System.EventHandler(this.btnXoaKH_Click);
 
             searchPanel.Controls.AddRange(new System.Windows.Forms.Control[] {
                 this.txtSDTKhachHang, this.btnTimKH, this.btnXoaKH
@@ -721,24 +692,22 @@ namespace PM_Ban_Do_An_Nhanh
             actionPanel.BackColor = System.Drawing.Color.White;
             actionPanel.Padding = new System.Windows.Forms.Padding(20);
 
-            this.btnPrint = new System.Windows.Forms.Button();
-            this.btnPrint.Text = "🖨️ In hóa đơn";
-            this.btnPrint.Size = new System.Drawing.Size(120, 40);
-            this.btnPrint.BackColor = System.Drawing.Color.FromArgb(52, 152, 219);
-            this.btnPrint.ForeColor = System.Drawing.Color.White;
-            this.btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+                         this.btnPrint.Text = "🖨️ In hóa đơn";
+             this.btnPrint.Size = new System.Drawing.Size(120, 40);
+             this.btnPrint.BackColor = System.Drawing.Color.FromArgb(52, 152, 219);
+             this.btnPrint.ForeColor = System.Drawing.Color.White;
+             this.btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+             this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 10F);
+             this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
 
-            this.btnExportPdf = new System.Windows.Forms.Button();
-            this.btnExportPdf.Text = "📄 Xuất PDF";
-            this.btnExportPdf.Size = new System.Drawing.Size(120, 40);
-            this.btnExportPdf.Location = new System.Drawing.Point(140, 10);
-            this.btnExportPdf.BackColor = System.Drawing.Color.FromArgb(46, 204, 113);
-            this.btnExportPdf.ForeColor = System.Drawing.Color.White;
-            this.btnExportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnExportPdf.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+             this.btnExportPdf.Text = "📄 Xuất PDF";
+             this.btnExportPdf.Size = new System.Drawing.Size(120, 40);
+             this.btnExportPdf.Location = new System.Drawing.Point(140, 10);
+             this.btnExportPdf.BackColor = System.Drawing.Color.FromArgb(46, 204, 113);
+             this.btnExportPdf.ForeColor = System.Drawing.Color.White;
+             this.btnExportPdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+             this.btnExportPdf.Font = new System.Drawing.Font("Segoe UI", 10F);
+             this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
 
             actionPanel.Controls.AddRange(new System.Windows.Forms.Control[] { this.btnPrint, this.btnExportPdf });
 
