@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnChonHinh = new System.Windows.Forms.Button();
+            this.picHinhAnh = new System.Windows.Forms.PictureBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.btnLamMoi = new System.Windows.Forms.Button();
             this.btnXoa = new System.Windows.Forms.Button();
             this.btnSua = new System.Windows.Forms.Button();
@@ -43,11 +46,15 @@
             this.txtTenMon = new System.Windows.Forms.TextBox();
             this.dgvMonAn = new System.Windows.Forms.DataGridView();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picHinhAnh)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMonAn)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnChonHinh);
+            this.panel1.Controls.Add(this.picHinhAnh);
+            this.panel1.Controls.Add(this.label5);
             this.panel1.Controls.Add(this.btnLamMoi);
             this.panel1.Controls.Add(this.btnXoa);
             this.panel1.Controls.Add(this.btnSua);
@@ -64,12 +71,41 @@
             this.panel1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(240, 450);
+            this.panel1.Size = new System.Drawing.Size(280, 593);
             this.panel1.TabIndex = 0;
+            // 
+            // btnChonHinh
+            // 
+            this.btnChonHinh.Location = new System.Drawing.Point(25, 420);
+            this.btnChonHinh.Name = "btnChonHinh";
+            this.btnChonHinh.Size = new System.Drawing.Size(182, 32);
+            this.btnChonHinh.TabIndex = 14;
+            this.btnChonHinh.Text = "Chọn hình ảnh";
+            this.btnChonHinh.UseVisualStyleBackColor = true;
+            this.btnChonHinh.Click += new System.EventHandler(this.btnChonHinh_Click);
+            // 
+            // picHinhAnh
+            // 
+            this.picHinhAnh.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.picHinhAnh.Location = new System.Drawing.Point(44, 280);
+            this.picHinhAnh.Name = "picHinhAnh";
+            this.picHinhAnh.Size = new System.Drawing.Size(163, 120);
+            this.picHinhAnh.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.picHinhAnh.TabIndex = 13;
+            this.picHinhAnh.TabStop = false;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 259);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(71, 18);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Hình ảnh";
             // 
             // btnLamMoi
             // 
-            this.btnLamMoi.Location = new System.Drawing.Point(25, 406);
+            this.btnLamMoi.Location = new System.Drawing.Point(25, 549);
             this.btnLamMoi.Name = "btnLamMoi";
             this.btnLamMoi.Size = new System.Drawing.Size(182, 32);
             this.btnLamMoi.TabIndex = 11;
@@ -79,9 +115,9 @@
             // 
             // btnXoa
             // 
-            this.btnXoa.Location = new System.Drawing.Point(25, 356);
+            this.btnXoa.Location = new System.Drawing.Point(125, 496);
             this.btnXoa.Name = "btnXoa";
-            this.btnXoa.Size = new System.Drawing.Size(182, 32);
+            this.btnXoa.Size = new System.Drawing.Size(82, 32);
             this.btnXoa.TabIndex = 10;
             this.btnXoa.Text = "Xóa";
             this.btnXoa.UseVisualStyleBackColor = true;
@@ -89,9 +125,9 @@
             // 
             // btnSua
             // 
-            this.btnSua.Location = new System.Drawing.Point(25, 306);
+            this.btnSua.Location = new System.Drawing.Point(25, 496);
             this.btnSua.Name = "btnSua";
-            this.btnSua.Size = new System.Drawing.Size(182, 32);
+            this.btnSua.Size = new System.Drawing.Size(82, 32);
             this.btnSua.TabIndex = 9;
             this.btnSua.Text = "Sửa";
             this.btnSua.UseVisualStyleBackColor = true;
@@ -99,9 +135,9 @@
             // 
             // btnThem
             // 
-            this.btnThem.Location = new System.Drawing.Point(25, 258);
+            this.btnThem.Location = new System.Drawing.Point(76, 458);
             this.btnThem.Name = "btnThem";
-            this.btnThem.Size = new System.Drawing.Size(182, 32);
+            this.btnThem.Size = new System.Drawing.Size(82, 32);
             this.btnThem.TabIndex = 8;
             this.btnThem.Text = "Thêm";
             this.btnThem.UseVisualStyleBackColor = true;
@@ -177,11 +213,11 @@
             // 
             this.dgvMonAn.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvMonAn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvMonAn.Location = new System.Drawing.Point(240, 0);
+            this.dgvMonAn.Location = new System.Drawing.Point(280, 0);
             this.dgvMonAn.Name = "dgvMonAn";
             this.dgvMonAn.RowHeadersWidth = 51;
             this.dgvMonAn.RowTemplate.Height = 24;
-            this.dgvMonAn.Size = new System.Drawing.Size(560, 450);
+            this.dgvMonAn.Size = new System.Drawing.Size(520, 593);
             this.dgvMonAn.TabIndex = 1;
             this.dgvMonAn.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMonAn_CellClick);
             // 
@@ -189,13 +225,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 593);
             this.Controls.Add(this.dgvMonAn);
             this.Controls.Add(this.panel1);
             this.Name = "frmMenuManagement";
             this.Text = "Quản lý thực đơn";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.picHinhAnh)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMonAn)).EndInit();
             this.ResumeLayout(false);
 
@@ -217,5 +254,8 @@
         private System.Windows.Forms.Button btnSua;
         private System.Windows.Forms.Button btnThem;
         private System.Windows.Forms.DataGridView dgvMonAn;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.PictureBox picHinhAnh;
+        private System.Windows.Forms.Button btnChonHinh;
     }
 }

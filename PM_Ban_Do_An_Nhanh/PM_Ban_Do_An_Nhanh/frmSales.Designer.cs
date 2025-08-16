@@ -33,6 +33,11 @@
         {
             this.pnlMonAn = new System.Windows.Forms.FlowLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnExportPdf = new System.Windows.Forms.Button();
+            this.dgvHoaDon = new System.Windows.Forms.DataGridView();
+            this.MaKH = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TenKH = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SDT_KhachHang = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnPrint = new System.Windows.Forms.Button();
             this.dgvKhachHang = new System.Windows.Forms.DataGridView();
             this.dgvOrderList = new System.Windows.Forms.DataGridView();
@@ -47,19 +52,15 @@
             this.btnRemoveItem = new System.Windows.Forms.Button();
             this.btnThanhToan = new System.Windows.Forms.Button();
             this.btnHuyDon = new System.Windows.Forms.Button();
-            this.dgvHoaDon = new System.Windows.Forms.DataGridView();
-            this.MaKH = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TenKH = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SDT_KhachHang = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnExportPdf = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvHoaDon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvKhachHang)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOrderList)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvHoaDon)).BeginInit();
             this.SuspendLayout();
             // 
             // pnlMonAn
             // 
+            this.pnlMonAn.AutoScroll = true;
             this.pnlMonAn.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlMonAn.Location = new System.Drawing.Point(0, 0);
             this.pnlMonAn.Name = "pnlMonAn";
@@ -90,6 +91,59 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1319, 480);
             this.panel1.TabIndex = 1;
+            // 
+            // btnExportPdf
+            // 
+            this.btnExportPdf.AutoSize = true;
+            this.btnExportPdf.Location = new System.Drawing.Point(752, 272);
+            this.btnExportPdf.Name = "btnExportPdf";
+            this.btnExportPdf.Size = new System.Drawing.Size(96, 26);
+            this.btnExportPdf.TabIndex = 27;
+            this.btnExportPdf.Text = "Xuất PDF";
+            this.btnExportPdf.UseVisualStyleBackColor = true;
+            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
+            // 
+            // dgvHoaDon
+            // 
+            this.dgvHoaDon.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvHoaDon.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.MaKH,
+            this.TenKH,
+            this.SDT_KhachHang});
+            this.dgvHoaDon.Location = new System.Drawing.Point(867, 6);
+            this.dgvHoaDon.Name = "dgvHoaDon";
+            this.dgvHoaDon.RowHeadersWidth = 51;
+            this.dgvHoaDon.RowTemplate.Height = 24;
+            this.dgvHoaDon.Size = new System.Drawing.Size(440, 273);
+            this.dgvHoaDon.TabIndex = 26;
+            this.dgvHoaDon.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvHoaDon_CellClick);
+            // 
+            // MaKH
+            // 
+            this.MaKH.HeaderText = "Mã Khách";
+            this.MaKH.MinimumWidth = 6;
+            this.MaKH.Name = "MaKH";
+            this.MaKH.ReadOnly = true;
+            this.MaKH.Visible = false;
+            this.MaKH.Width = 125;
+            // 
+            // TenKH
+            // 
+            this.TenKH.DataPropertyName = "TenKH";
+            this.TenKH.HeaderText = "Tên khách hàng";
+            this.TenKH.MinimumWidth = 6;
+            this.TenKH.Name = "TenKH";
+            this.TenKH.ReadOnly = true;
+            this.TenKH.Width = 125;
+            // 
+            // SDT_KhachHang
+            // 
+            this.SDT_KhachHang.DataPropertyName = "SDT_KhachHang";
+            this.SDT_KhachHang.HeaderText = "Số điện thoại ";
+            this.SDT_KhachHang.MinimumWidth = 6;
+            this.SDT_KhachHang.Name = "SDT_KhachHang";
+            this.SDT_KhachHang.ReadOnly = true;
+            this.SDT_KhachHang.Width = 125;
             // 
             // btnPrint
             // 
@@ -229,59 +283,6 @@
             this.btnHuyDon.UseVisualStyleBackColor = true;
             this.btnHuyDon.Click += new System.EventHandler(this.btnHuyDon_Click);
             // 
-            // dgvHoaDon
-            // 
-            this.dgvHoaDon.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvHoaDon.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.MaKH,
-            this.TenKH,
-            this.SDT_KhachHang});
-            this.dgvHoaDon.Location = new System.Drawing.Point(867, 6);
-            this.dgvHoaDon.Name = "dgvHoaDon";
-            this.dgvHoaDon.RowHeadersWidth = 51;
-            this.dgvHoaDon.RowTemplate.Height = 24;
-            this.dgvHoaDon.Size = new System.Drawing.Size(440, 273);
-            this.dgvHoaDon.TabIndex = 26;
-            this.dgvHoaDon.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvHoaDon_CellClick);
-            // 
-            // MaKH
-            // 
-            this.MaKH.HeaderText = "Mã Khách";
-            this.MaKH.MinimumWidth = 6;
-            this.MaKH.Name = "MaKH";
-            this.MaKH.ReadOnly = true;
-            this.MaKH.Visible = false;
-            this.MaKH.Width = 125;
-            // 
-            // TenKH
-            // 
-            this.TenKH.DataPropertyName = "TenKH";
-            this.TenKH.HeaderText = "Tên khách hàng";
-            this.TenKH.MinimumWidth = 6;
-            this.TenKH.Name = "TenKH";
-            this.TenKH.ReadOnly = true;
-            this.TenKH.Width = 125;
-            // 
-            // SDT_KhachHang
-            // 
-            this.SDT_KhachHang.DataPropertyName = "SDT_KhachHang";
-            this.SDT_KhachHang.HeaderText = "Số điện thoại ";
-            this.SDT_KhachHang.MinimumWidth = 6;
-            this.SDT_KhachHang.Name = "SDT_KhachHang";
-            this.SDT_KhachHang.ReadOnly = true;
-            this.SDT_KhachHang.Width = 125;
-            // 
-            // btnExportPdf
-            // 
-            this.btnExportPdf.AutoSize = true;
-            this.btnExportPdf.Location = new System.Drawing.Point(752, 272);
-            this.btnExportPdf.Name = "btnExportPdf";
-            this.btnExportPdf.Size = new System.Drawing.Size(96, 26);
-            this.btnExportPdf.TabIndex = 27;
-            this.btnExportPdf.Text = "Xuất PDF";
-            this.btnExportPdf.UseVisualStyleBackColor = true;
-            this.btnExportPdf.Click += new System.EventHandler(this.btnExportPdf_Click);
-            // 
             // frmSales
             // 
             this.ClientSize = new System.Drawing.Size(1319, 659);
@@ -291,9 +292,9 @@
             this.Text = "Bán hàng";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvHoaDon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvKhachHang)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvOrderList)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvHoaDon)).EndInit();
             this.ResumeLayout(false);
 
         }

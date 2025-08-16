@@ -1,9 +1,11 @@
 ﻿using PM_Ban_Do_An_Nhanh.BLL;
+using PM_Ban_Do_An_Nhanh.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +18,7 @@ namespace PM_Ban_Do_An_Nhanh
         private MonAnBLL monAnBLL = new MonAnBLL();
         private DanhMucBLL danhMucBLL = new DanhMucBLL();
         private int selectedMonAnId = -1;
+        private string selectedImagePath = ""; // Đường dẫn ảnh được chọn
 
         public frmMenuManagement()
         {
@@ -37,10 +40,11 @@ namespace PM_Ban_Do_An_Nhanh
                 dgvMonAn.Columns["MaMon"].HeaderText = "Mã Món";
                 dgvMonAn.Columns["TenMon"].HeaderText = "Tên Món";
                 dgvMonAn.Columns["Gia"].HeaderText = "Giá";
-                dgvMonAn.Columns["Gia"].DefaultCellStyle.Format = "N0"; // Định dạng tiền tệ
-                dgvMonAn.Columns["MaDM"].Visible = false; // Ẩn cột mã danh mục
+                dgvMonAn.Columns["Gia"].DefaultCellStyle.Format = "N0";
+                dgvMonAn.Columns["MaDM"].Visible = false;
                 dgvMonAn.Columns["TenDM"].HeaderText = "Danh Mục";
                 dgvMonAn.Columns["TrangThai"].HeaderText = "Trạng Thái";
+                dgvMonAn.Columns["HinhAnh"].Visible = false; // Ẩn cột đường dẫn ảnh
             }
             catch (Exception ex)
             {
@@ -80,10 +84,39 @@ namespace PM_Ban_Do_An_Nhanh
                     selectedMonAnId = id;
                 else
                     selectedMonAnId = -1;
+
                 txtTenMon.Text = dgvMonAn.Rows[e.RowIndex].Cells["TenMon"].Value.ToString();
                 txtGia.Text = dgvMonAn.Rows[e.RowIndex].Cells["Gia"].Value.ToString();
                 cboDanhMuc.SelectedValue = dgvMonAn.Rows[e.RowIndex].Cells["MaDM"].Value;
                 cboTrangThai.SelectedItem = dgvMonAn.Rows[e.RowIndex].Cells["TrangThai"].Value.ToString();
+
+                // Load ảnh hiện tại
+                string imagePath = dgvMonAn.Rows[e.RowIndex].Cells["HinhAnh"].Value?.ToString();
+                LoadImageToPictureBox(imagePath);
+            }
+        }
+
+        private void LoadImageToPictureBox(string imagePath)
+        {
+            try
+            {
+                var image = ImageHelper.LoadMenuItemImage(imagePath);
+                if (image != null)
+                {
+                    picHinhAnh.Image?.Dispose(); // Dispose ảnh cũ
+                    picHinhAnh.Image = image;
+                }
+                else
+                {
+                    picHinhAnh.Image?.Dispose();
+                    picHinhAnh.Image = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                picHinhAnh.Image?.Dispose();
+                picHinhAnh.Image = null;
             }
         }
 
@@ -98,7 +131,7 @@ namespace PM_Ban_Do_An_Nhanh
 
             try
             {
-                if (monAnBLL.ThemMonAn(tenMon, gia, maDM, trangThai))
+                if (monAnBLL.ThemMonAn(tenMon, gia, maDM, trangThai, selectedImagePath))
                 {
                     MessageBox.Show("Thêm món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
@@ -131,7 +164,7 @@ namespace PM_Ban_Do_An_Nhanh
 
             try
             {
-                if (monAnBLL.SuaMonAn(selectedMonAnId, tenMon, gia, maDM, trangThai))
+                if (monAnBLL.SuaMonAn(selectedMonAnId, tenMon, gia, maDM, trangThai, selectedImagePath))
                 {
                     MessageBox.Show("Sửa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
@@ -212,11 +245,38 @@ namespace PM_Ban_Do_An_Nhanh
         private void ClearInputFields()
         {
             selectedMonAnId = -1;
+            selectedImagePath = "";
             txtTenMon.Clear();
             txtGia.Clear();
             cboDanhMuc.SelectedIndex = -1;
-            cboTrangThai.SelectedIndex = 0; // Mặc định là 'Còn hàng'
+            cboTrangThai.SelectedIndex = 0;
+            picHinhAnh.Image?.Dispose();
+            picHinhAnh.Image = null;
             txtTenMon.Focus();
+        }
+
+        private void btnChonHinh_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+                openFileDialog.Title = "Chọn hình ảnh món ăn";
+                
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        selectedImagePath = openFileDialog.FileName;
+                        picHinhAnh.Image?.Dispose();
+                        picHinhAnh.Image = Image.FromFile(selectedImagePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        selectedImagePath = "";
+                    }
+                }
+            }
         }
     }
 }

@@ -105,6 +105,7 @@
     <Compile Include="frmSales.Designer.cs">
       <DependentUpon>frmSales.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="MenuItemCard.cs">
       <SubType>UserControl</SubType>
     </Compile>

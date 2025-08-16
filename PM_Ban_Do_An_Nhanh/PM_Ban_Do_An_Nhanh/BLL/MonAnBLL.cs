@@ -1,5 +1,6 @@
 ﻿using PM_Ban_Do_An_Nhanh.DAL;
 using PM_Ban_Do_An_Nhanh.Entities;
+using PM_Ban_Do_An_Nhanh.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,30 +19,108 @@ namespace PM_Ban_Do_An_Nhanh.BLL
             return monAnDAL.LayDanhSachMonAn();
         }
 
-        public bool ThemMonAn(string tenMon, decimal gia, int maDM, string trangThai)
+        public bool ThemMonAn(string tenMon, decimal gia, int maDM, string trangThai, string imageSourcePath = null)
         {
-            if (string.IsNullOrWhiteSpace(tenMon) || gia <= 0)
+            try
             {
+                MonAn monAn = new MonAn
+                {
+                    TenMon = tenMon,
+                    Gia = gia,
+                    MaDM = maDM,
+                    TrangThai = trangThai
+                };
+
+                // Thêm món ăn trước để lấy ID
+                int newMonAnId = monAnDAL.ThemMonAn(monAn);
+                if (newMonAnId > 0)
+                {
+                    // Lưu ảnh nếu có
+                    if (!string.IsNullOrEmpty(imageSourcePath))
+                    {
+                        string imagePath = ImageHelper.SaveMenuItemImage(imageSourcePath, newMonAnId, tenMon);
+                        if (!string.IsNullOrEmpty(imagePath))
+                        {
+                            // Cập nhật đường dẫn ảnh
+                            monAnDAL.CapNhatDuongDanAnh(newMonAnId, imagePath);
+                        }
+                    }
+                    return true;
+                }
                 return false;
             }
-            MonAn monAn = new MonAn { TenMon = tenMon, Gia = gia, MaDM = maDM, TrangThai = trangThai };
-            return monAnDAL.ThemMonAn(monAn);
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public bool SuaMonAn(int maMon, string tenMon, decimal gia, int maDM, string trangThai)
+        public bool SuaMonAn(int maMon, string tenMon, decimal gia, int maDM, string trangThai, string imageSourcePath = null)
         {
-            if (string.IsNullOrWhiteSpace(tenMon) || gia <= 0 || maMon <= 0)
+            try
             {
-                return false;
+                // Lấy thông tin ảnh cũ để xóa nếu cần
+                string oldImagePath = monAnDAL.LayDuongDanAnhByMaMon(maMon);
+
+                MonAn monAn = new MonAn
+                {
+                    MaMon = maMon,
+                    TenMon = tenMon,
+                    Gia = gia,
+                    MaDM = maDM,
+                    TrangThai = trangThai
+                };
+
+                // Xử lý ảnh mới nếu có
+                if (!string.IsNullOrEmpty(imageSourcePath))
+                {
+                    string newImagePath = ImageHelper.SaveMenuItemImage(imageSourcePath, maMon, tenMon);
+                    monAn.HinhAnh = newImagePath;
+                    
+                    // Xóa ảnh cũ nếu khác ảnh mới
+                    if (!string.IsNullOrEmpty(oldImagePath) && oldImagePath != newImagePath)
+                    {
+                        ImageHelper.DeleteMenuItemImage(oldImagePath);
+                    }
+                }
+                else
+                {
+                    // Giữ nguyên ảnh cũ
+                    monAn.HinhAnh = oldImagePath;
+                }
+
+                return monAnDAL.SuaMonAn(monAn);
             }
-            MonAn monAn = new MonAn { MaMon = maMon, TenMon = tenMon, Gia = gia, MaDM = maDM, TrangThai = trangThai };
-            return monAnDAL.SuaMonAn(monAn);
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public bool XoaMonAn(int maMon)
         {
             if (maMon <= 0) return false;
-            return monAnDAL.XoaMonAn(maMon);
+            
+            try
+            {
+                // Lấy đường dẫn ảnh để xóa
+                string imagePath = monAnDAL.LayDuongDanAnhByMaMon(maMon);
+                
+                // Xóa món ăn từ database
+                bool result = monAnDAL.XoaMonAn(maMon);
+                
+                // Xóa ảnh nếu xóa thành công
+                if (result && !string.IsNullOrEmpty(imagePath))
+                {
+                    ImageHelper.DeleteMenuItemImage(imagePath);
+                }
+                
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

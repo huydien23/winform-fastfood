@@ -50,9 +50,12 @@ namespace PM_Ban_Do_An_Nhanh
                     int maMon = Convert.ToInt32(row["MaMon"]);
                     string tenMon = row["TenMon"].ToString();
                     decimal gia = Convert.ToDecimal(row["Gia"]);
+                    string imagePath = row.Table.Columns.Contains("HinhAnh") ? row["HinhAnh"].ToString() : null;
 
-                    // Try to find image file in Images folder matching the item name
-                    string imagePath = FindImageForMon(tenMon);
+                    // Nếu chưa có đường dẫn ảnh, dùng hàm tìm ảnh cũ
+                    if (string.IsNullOrEmpty(imagePath))
+                        imagePath = FindImageForMon(tenMon);
+
                     card.SetData(maMon, tenMon, gia, imagePath);
                     card.Width = 240;
                     card.Height = 104;
