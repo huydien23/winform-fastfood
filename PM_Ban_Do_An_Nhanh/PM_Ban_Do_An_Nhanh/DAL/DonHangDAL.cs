@@ -18,17 +18,41 @@ namespace PM_Ban_Do_An_Nhanh.DAL
 
                 try
                 {
-                    string queryDonHang = "INSERT INTO DonHang (NgayLap, TongTien, TrangThaiThanhToan, MaKH) VALUES (@NgayLap, @TongTien, @TrangThaiThanhToan, @MaKH); SELECT SCOPE_IDENTITY();";
+                    // Check for potential duplicate orders within last 30 seconds
+                    if (KiemTraDonHangTrungLap(donHang, conn, transaction))
+                    {
+                        throw new InvalidOperationException("Đơn hàng tương tự đã được tạo trong vòng 30 giây qua. Vui lòng kiểm tra lại.");
+                    }
+
+                    // Insert main order
+                    string queryDonHang = @"
+                        INSERT INTO DonHang (NgayLap, TongTien, TrangThaiThanhToan, MaKH) 
+                        VALUES (@NgayLap, @TongTien, @TrangThaiThanhToan, @MaKH); 
+                        SELECT SCOPE_IDENTITY();";
+
                     using (SqlCommand cmdDonHang = new SqlCommand(queryDonHang, conn, transaction))
                     {
                         cmdDonHang.Parameters.AddWithValue("@NgayLap", donHang.NgayLap);
                         cmdDonHang.Parameters.AddWithValue("@TongTien", donHang.TongTien);
                         cmdDonHang.Parameters.AddWithValue("@TrangThaiThanhToan", donHang.TrangThaiThanhToan);
                         cmdDonHang.Parameters.AddWithValue("@MaKH", (object)donHang.MaKH ?? DBNull.Value);
-                        maDonHangMoi = Convert.ToInt32(cmdDonHang.ExecuteScalar());
+
+                        object result = cmdDonHang.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            maDonHangMoi = Convert.ToInt32(result);
+                        }
+                        else
+                        {
+                            throw new Exception("Không thể tạo đơn hàng mới");
+                        }
                     }
 
-                    string queryChiTiet = "INSERT INTO ChiTietDonHang (MaDH, MaMon, SoLuong, DonGia) VALUES (@MaDH, @MaMon, @SoLuong, @DonGia)";
+                    // Insert order details
+                    string queryChiTiet = @"
+                        INSERT INTO ChiTietDonHang (MaDH, MaMon, SoLuong, DonGia) 
+                        VALUES (@MaDH, @MaMon, @SoLuong, @DonGia)";
+
                     foreach (var chiTiet in chiTietList)
                     {
                         using (SqlCommand cmdChiTiet = new SqlCommand(queryChiTiet, conn, transaction))
@@ -40,15 +64,91 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                             cmdChiTiet.ExecuteNonQuery();
                         }
                     }
+
                     transaction.Commit();
                 }
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    throw new Exception("Lỗi khi thêm đơn hàng và chi tiết: " + ex.Message);
+                    throw new Exception("Lỗi khi thêm đơn hàng: " + ex.Message);
                 }
             }
             return maDonHangMoi;
+        }
+
+        private bool KiemTraDonHangTrungLap(DonHang donHang, SqlConnection conn, SqlTransaction transaction)
+        {
+            string query = @"
+                SELECT COUNT(*) FROM DonHang 
+                WHERE TongTien = @TongTien 
+                AND MaKH = @MaKH 
+                AND TrangThaiThanhToan = @TrangThaiThanhToan
+                AND ABS(DATEDIFF(SECOND, NgayLap, @NgayLap)) <= 30";
+
+            using (SqlCommand cmd = new SqlCommand(query, conn, transaction))
+            {
+                cmd.Parameters.AddWithValue("@TongTien", donHang.TongTien);
+                cmd.Parameters.AddWithValue("@MaKH", (object)donHang.MaKH ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@TrangThaiThanhToan", donHang.TrangThaiThanhToan);
+                cmd.Parameters.AddWithValue("@NgayLap", donHang.NgayLap);
+
+                int count = (int)cmd.ExecuteScalar();
+                return count > 0;
+            }
+        }
+
+        public int XoaDonHangTrungLap()
+        {
+            try
+            {
+                string query = @"
+                    WITH DonHangDups AS (
+                        SELECT MaDH, NgayLap, TongTien, MaKH,
+                               ROW_NUMBER() OVER (
+                                   PARTITION BY TongTien, ISNULL(MaKH, -1), 
+                                                CONVERT(DATE, NgayLap), 
+                                                DATEPART(HOUR, NgayLap), 
+                                                DATEPART(MINUTE, NgayLap)
+                                   ORDER BY MaDH
+                               ) as RowNum
+                        FROM DonHang
+                        WHERE TrangThaiThanhToan = N'Đã thanh toán'
+                    )
+                    DELETE FROM ChiTietDonHang 
+                    WHERE MaDH IN (
+                        SELECT MaDH FROM DonHangDups WHERE RowNum > 1
+                    );
+                    
+                    WITH DonHangDups AS (
+                        SELECT MaDH, NgayLap, TongTien, MaKH,
+                               ROW_NUMBER() OVER (
+                                   PARTITION BY TongTien, ISNULL(MaKH, -1), 
+                                                CONVERT(DATE, NgayLap), 
+                                                DATEPART(HOUR, NgayLap), 
+                                                DATEPART(MINUTE, NgayLap)
+                                   ORDER BY MaDH
+                               ) as RowNum
+                        FROM DonHang
+                        WHERE TrangThaiThanhToan = N'Đã thanh toán'
+                    )
+                    DELETE FROM DonHang 
+                    WHERE MaDH IN (
+                        SELECT MaDH FROM DonHangDups WHERE RowNum > 1
+                    )";
+
+                using (SqlConnection conn = DBConnection.GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
 
         public DataTable LayChiTietDonHangChoIn(int maDH)
@@ -70,7 +170,8 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                 LEFT JOIN KhachHang kh ON dh.MaKH = kh.MaKH
                 JOIN ChiTietDonHang ct ON dh.MaDH = ct.MaDH
                 JOIN MonAn ma ON ct.MaMon = ma.MaMon
-                WHERE dh.MaDH = @MaDH";
+                WHERE dh.MaDH = @MaDH
+                ORDER BY ma.TenMon";
 
             using (SqlConnection conn = DBConnection.GetConnection())
             {
@@ -89,7 +190,7 @@ namespace PM_Ban_Do_An_Nhanh.DAL
         {
             DataTable dt = new DataTable();
             string query = @"
-                SELECT
+                SELECT DISTINCT
                     dh.MaDH,
                     dh.NgayLap,
                     dh.TongTien,
@@ -211,6 +312,28 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                 }
             }
             return dt;
+        }
+        public int XoaTatCaDonHang()
+        {
+            try
+            {
+                string query = @"
+                    DELETE FROM ChiTietDonHang;
+                    DELETE FROM DonHang;";
+
+                using (SqlConnection conn = DBConnection.GetConnection())
+                {
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        conn.Open();
+                        return cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
     }
 }

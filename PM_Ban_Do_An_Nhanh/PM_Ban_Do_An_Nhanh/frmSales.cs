@@ -26,6 +26,9 @@ namespace PM_Ban_Do_An_Nhanh
         private KhachHang selectedCustomer = null;
         private int? selectedMaDH = null;
 
+        private bool isProcessingPayment = false;
+        private DateTime lastPaymentTime = DateTime.MinValue;
+
         public frmSales()
         {
             InitializeComponent();
@@ -423,7 +426,7 @@ namespace PM_Ban_Do_An_Nhanh
             btn.MouseLeave += (s, e) => btn.BackColor = backgroundColor;
         }
 
-        private void SetupHistoryTabContent()
+                private void SetupHistoryTabContent()
         {
             // Header
             Panel headerPanel = new Panel();
@@ -461,7 +464,18 @@ namespace PM_Ban_Do_An_Nhanh
             btnExportPdf.FlatStyle = FlatStyle.Flat;
             btnExportPdf.Font = new System.Drawing.Font("Segoe UI", 10F);
 
-            actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf });
+            // Add Delete All Orders button
+            Button btnXoaTatCaHoaDon = new Button();
+            btnXoaTatCaHoaDon.Text = "Xóa tất cả HĐ";
+            btnXoaTatCaHoaDon.Size = new Size(130, 40);
+            btnXoaTatCaHoaDon.Location = new Point(270, 10);
+            btnXoaTatCaHoaDon.BackColor = Color.FromArgb(231, 76, 60);
+            btnXoaTatCaHoaDon.ForeColor = Color.White;
+            btnXoaTatCaHoaDon.FlatStyle = FlatStyle.Flat;
+            btnXoaTatCaHoaDon.Font = new System.Drawing.Font("Segoe UI", 10F);
+            btnXoaTatCaHoaDon.Click += btnXoaTatCaHoaDon_Click;
+
+            actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf, btnXoaTatCaHoaDon });
 
             tabHistory.Controls.Clear();
             tabHistory.Controls.AddRange(new Control[] { headerPanel, actionPanel, dgvHoaDon });
@@ -678,6 +692,21 @@ namespace PM_Ban_Do_An_Nhanh
 
         private void btnThanhToan_Click(object sender, EventArgs e)
         {
+            // Prevent double-click
+            if (isProcessingPayment)
+            {
+                MessageBox.Show("Đang xử lý thanh toán, vui lòng đợi...", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Prevent rapid payments
+            TimeSpan timeSinceLastPayment = DateTime.Now - lastPaymentTime;
+            if (timeSinceLastPayment.TotalSeconds < 3)
+            {
+                MessageBox.Show("Vui lòng đợi ít nhất 3 giây trước khi thực hiện thanh toán tiếp theo.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (currentOrderItems.Count == 0)
             {
                 MessageBox.Show("Vui lòng thêm món ăn vào đơn hàng để thanh toán.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -710,16 +739,21 @@ namespace PM_Ban_Do_An_Nhanh
                 return;
             }
 
-            DonHang donHangMoi = new DonHang
-            {
-                NgayLap = DateTime.Now,
-                TongTien = tongTien,
-                TrangThaiThanhToan = "Đã thanh toán",
-                MaKH = selectedCustomer?.MaKH
-            };
+            // Disable button and set processing flag
+            isProcessingPayment = true;
+            btnThanhToan.Enabled = false;
+            btnThanhToan.Text = "Đang xử lý...";
 
             try
             {
+                DonHang donHangMoi = new DonHang
+                {
+                    NgayLap = DateTime.Now,
+                    TongTien = tongTien,
+                    TrangThaiThanhToan = "Đã thanh toán",
+                    MaKH = selectedCustomer?.MaKH
+                };
+
                 foreach (var item in currentOrderItems)
                 {
                     if (item.MaMon <= 0 || item.SoLuong <= 0 || item.DonGia <= 0)
@@ -733,6 +767,7 @@ namespace PM_Ban_Do_An_Nhanh
                 if (maDonHangMoi > 0)
                 {
                     MessageBox.Show("Thanh toán thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lastPaymentTime = DateTime.Now;
                     InHoaDon(maDonHangMoi);
                     ClearOrder();
 
@@ -750,10 +785,45 @@ namespace PM_Ban_Do_An_Nhanh
                     MessageBox.Show("Thanh toán thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Cảnh báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi thanh toán: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Console.WriteLine($"Payment Error Details: {ex}");
+            }
+            finally
+            {
+                // Re-enable button and reset processing flag
+                isProcessingPayment = false;
+                btnThanhToan.Enabled = true;
+                btnThanhToan.Text = "Thanh toán";
+            }
+        }
+
+        private void btnXoaDonHangTrungLap_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show(
+                "Bạn có chắc chắn muốn xóa tất cả đơn hàng trùng lặp?\n\nChỉ giữ lại đơn hàng đầu tiên của mỗi nhóm trùng lặp.",
+                "Xác nhận xóa đơn hàng trùng lặp",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                try
+                {
+                    string result = donHangBLL.XoaDonHangTrungLap();
+                    MessageBox.Show(result, "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LoadHoaDonToGrid();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Lỗi khi xóa đơn hàng trùng lặp: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -891,7 +961,7 @@ namespace PM_Ban_Do_An_Nhanh
                     string tenMon = row["TenMon"].ToString().ToLowerInvariant();
 
                     if (string.IsNullOrEmpty(searchText) || tenMon.Contains(searchText))
-                    {
+                        {
                         var card = new MenuItemCard();
                         int maMon = Convert.ToInt32(row["MaMon"]);
                         string originalTenMon = row["TenMon"].ToString();
@@ -1088,7 +1158,7 @@ namespace PM_Ban_Do_An_Nhanh
 
                         pdfDoc.Add(table);
                         pdfDoc.Add(new Paragraph(" "));
-                        pdfDoc.Add(new Paragraph($"Tổng cộng: {Convert.ToDecimal(dtHoaDon.Rows[0]["TongTien"]):N0} VNĐ", normalFont));
+                        pdfDoc.Add(new Paragraph($"Tổng cộng: {Convert.ToDecimal(dtHoaDon.Rows[0]["TongTien"]):N0} VND", normalFont));
                         pdfDoc.Add(new Paragraph("========================================", normalFont));
                         pdfDoc.Add(new Paragraph("Cảm ơn quý khách và hẹn gặp lại!", normalFont));
 
@@ -1163,6 +1233,48 @@ namespace PM_Ban_Do_An_Nhanh
             }
 
             InHoaDon(selectedMaDH.Value);
+        }
+
+        private void btnXoaTatCaHoaDon_Click(object sender, EventArgs e)
+        {
+            DialogResult confirmResult = MessageBox.Show(
+                "⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa TẤT CẢ hóa đơn?\n\n" +
+                "Hành động này sẽ xóa vĩnh viễn tất cả dữ liệu đơn hàng và không thể khôi phục!\n\n" +
+                "Bạn có muốn tiếp tục?",
+                "⚠️ Xác nhận xóa tất cả hóa đơn",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (confirmResult == DialogResult.Yes)
+            {
+                // Double confirmation for safety
+                DialogResult doubleConfirm = MessageBox.Show(
+                    "Đây là xác nhận cuối cùng!\n\n" +
+                    "Tất cả hóa đơn sẽ bị xóa vĩnh viễn.\n" +
+                    "Bạn có THỰC SỰ muốn xóa tất cả?",
+                    "⚠️ Xác nhận lần cuối",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Error
+                );
+
+                if (doubleConfirm == DialogResult.Yes)
+                {
+                    try
+                    {
+                        string result = donHangBLL.XoaTatCaDonHang();
+                        MessageBox.Show(result, "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // Refresh the grid and clear selection
+                        LoadHoaDonToGrid();
+                        selectedMaDH = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Lỗi khi xóa tất cả đơn hàng: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
 
         #endregion

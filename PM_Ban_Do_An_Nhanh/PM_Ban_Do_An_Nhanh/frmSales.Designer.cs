@@ -508,7 +508,7 @@ namespace PM_Ban_Do_An_Nhanh
 
             orderActionsSection.Controls.Add(orderActionsFlow);
 
-            // Total section
+            
             System.Windows.Forms.Panel totalSection = new System.Windows.Forms.Panel();
             totalSection.Dock = System.Windows.Forms.DockStyle.Top;
             totalSection.Height = 65;
@@ -530,10 +530,10 @@ namespace PM_Ban_Do_An_Nhanh
             lblTotalText.Location = new System.Drawing.Point(50, 20);
             lblTotalText.Size = new System.Drawing.Size(120, 25);
 
-            // Use the existing lblTongTien from InitializeComponent and configure it properly
-            this.lblTongTien.Text = "0 VNĐ";
+            
+            this.lblTongTien.Text = "0 VND";
             this.lblTongTien.Font = new System.Drawing.Font("Segoe UI", 16F, System.Drawing.FontStyle.Bold);
-            this.lblTongTien.ForeColor = System.Drawing.Color.White;
+            this.lblTongTien.ForeColor = System.Drawing.Color.Red;
             this.lblTongTien.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.lblTongTien.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             this.lblTongTien.Location = new System.Drawing.Point(280, 15);
@@ -543,7 +543,7 @@ namespace PM_Ban_Do_An_Nhanh
                 lblTotalIcon, lblTotalText, this.lblTongTien
             });
 
-            // Main action buttons section
+            
             System.Windows.Forms.Panel mainActionsSection = new System.Windows.Forms.Panel();
             mainActionsSection.Dock = System.Windows.Forms.DockStyle.Bottom;
             mainActionsSection.Height = 60;
