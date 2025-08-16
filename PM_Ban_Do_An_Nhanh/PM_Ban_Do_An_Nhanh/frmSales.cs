@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -45,24 +46,30 @@ namespace PM_Ban_Do_An_Nhanh
 
                 foreach (DataRow row in dtMonAn.Rows)
                 {
-                    Button btnMonAn = new Button();
-                    btnMonAn.Text = $"{row["TenMon"]}\n{Convert.ToDecimal(row["Gia"]):N0} VNĐ";
-                    btnMonAn.Tag = row["MaMon"]; // Lưu Mã Món vào Tag
-                    btnMonAn.Width = 120;
-                    btnMonAn.Height = 80;
-                    btnMonAn.Margin = new Padding(5);
-                    btnMonAn.FlatStyle = FlatStyle.Flat;
-                    btnMonAn.FlatAppearance.BorderSize = 1;
-                    btnMonAn.BackColor = System.Drawing.Color.LightBlue;
+                    var card = new MenuItemCard();
+                    int maMon = Convert.ToInt32(row["MaMon"]);
+                    string tenMon = row["TenMon"].ToString();
+                    decimal gia = Convert.ToDecimal(row["Gia"]);
+
+                    // Try to find image file in Images folder matching the item name
+                    string imagePath = FindImageForMon(tenMon);
+                    card.SetData(maMon, tenMon, gia, imagePath);
+                    card.Width = 240;
+                    card.Height = 104;
+                    card.Margin = new Padding(6);
 
                     if (row["TrangThai"].ToString() == "Hết hàng")
                     {
-                        btnMonAn.Enabled = false;
-                        btnMonAn.BackColor = System.Drawing.Color.LightGray;
+                        card.Enabled = false;
+                        card.BackColor = System.Drawing.Color.LightGray;
                     }
 
-                    btnMonAn.Click += BtnMonAn_Click;
-                    pnlMonAn.Controls.Add(btnMonAn);
+                    card.AddClicked += (s, e) =>
+                    {
+                        AddItemToOrderList(e.MaMon, e.TenMon, e.Price);
+                    };
+
+                    pnlMonAn.Controls.Add(card);
                 }
             }
             catch (Exception ex)
@@ -103,15 +110,15 @@ namespace PM_Ban_Do_An_Nhanh
             dgvOrderList.Columns.Add("MaMon", "Mã Món");
             dgvOrderList.Columns["MaMon"].Visible = false;
             dgvOrderList.Columns.Add("TenMon", "Tên Món");
-            
+
             dgvOrderList.Columns.Add("SoLuong", "SL");
-            
+
             dgvOrderList.Columns.Add("DonGia", "Đơn Giá");
             dgvOrderList.Columns["DonGia"].DefaultCellStyle.Format = "N0";
-            
+
             dgvOrderList.Columns.Add("ThanhTien", "Thành Tiền");
             dgvOrderList.Columns["ThanhTien"].DefaultCellStyle.Format = "N0";
-            
+
 
             dgvOrderList.AllowUserToAddRows = false;
             dgvOrderList.ReadOnly = true;
@@ -149,6 +156,59 @@ namespace PM_Ban_Do_An_Nhanh
                 totalAmount += thanhTien;
             }
             lblTongTien.Text = totalAmount.ToString("N0") + " VNĐ";
+        }
+
+        private string FindImageForMon(string tenMon)
+        {
+            try
+            {
+                string imagesDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+                if (!Directory.Exists(imagesDir)) return null;
+
+                // normalize name: remove diacritics, spaces, to lower
+                string normalized = RemoveDiacritics(tenMon).ToLowerInvariant();
+                normalized = System.Text.RegularExpressions.Regex.Replace(normalized, "[^a-z0-9]", "-");
+                // try to match any file that contains normalized tokens
+                foreach (var file in Directory.GetFiles(imagesDir))
+                {
+                    string name = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
+                    if (name.Contains(normalized) || normalized.Contains(name))
+                        return file;
+                }
+
+                // fallback: try simple token match
+                var tokens = normalized.Split(new[] { '-' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var file in Directory.GetFiles(imagesDir))
+                {
+                    string name = Path.GetFileNameWithoutExtension(file).ToLowerInvariant();
+                    bool all = tokens.All(t => name.Contains(t));
+                    if (all) return file;
+                }
+
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        private string RemoveDiacritics(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            var normalizedString = text.Normalize(NormalizationForm.FormD);
+            var stringBuilder = new System.Text.StringBuilder();
+
+            foreach (var c in normalizedString)
+            {
+                var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+                if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+                {
+                    stringBuilder.Append(c);
+                }
+            }
+
+            return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 
         private void btnPlusItem_Click(object sender, EventArgs e)
@@ -312,7 +372,7 @@ namespace PM_Ban_Do_An_Nhanh
                 NgayLap = DateTime.Now,
                 TongTien = tongTien,
                 TrangThaiThanhToan = "Đã thanh toán",
-                MaKH = selectedCustomer?.MaKH 
+                MaKH = selectedCustomer?.MaKH
             };
 
             try
