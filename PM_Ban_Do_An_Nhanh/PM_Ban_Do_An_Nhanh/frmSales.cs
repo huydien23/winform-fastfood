@@ -571,7 +571,7 @@ namespace PM_Ban_Do_An_Nhanh
             btnXoaTatCaHoaDon.Font = new System.Drawing.Font("Segoe UI", 10F);
             btnXoaTatCaHoaDon.Click += btnXoaDonHangTrungLap_Click;
 
-            actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf, btnXoaTatCaHoaDon });
+            actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf });
 
             // DataGridView
             dgvHoaDon.Location = new Point(0, 95); // 80px header + 15px margin
