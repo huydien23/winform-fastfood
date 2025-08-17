@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using PM_Ban_Do_An_Nhanh.BLL;
+using PM_Ban_Do_An_Nhanh.Utils;
 
 namespace PM_Ban_Do_An_Nhanh
 {
@@ -19,6 +20,28 @@ namespace PM_Ban_Do_An_Nhanh
         public frmDanhMuc()
         {
             InitializeComponent();
+            this.Text = "📂 Quản lý danh mục";
+            SetupButtonStyles();
+        }
+
+        private void SetupButtonStyles()
+        {
+            // Style buttons với icons và tooltips
+            ButtonStyleHelper.ApplySuccessStyle(btnThem, "➕ Thêm", "Thêm danh mục mới", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyWarningStyle(btnSua, "✏️ Sửa", "Chỉnh sửa danh mục đã chọn", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyDangerStyle(btnXoa, "🗑️ Xóa", "Xóa danh mục đã chọn", ButtonSize.Medium);
+            
+
+            // Style các controls khác
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtMaDanhMuc);
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtTenDanhMuc);
+
+            // Style DataGridView
+            ButtonStyleHelper.ApplyModernDataGridViewStyle(dgvDanhMuc, "success");
+
+            // Style form
+            this.BackColor = Color.FromArgb(248, 249, 250);
+            this.Font = new Font("Segoe UI", 10F);
         }
 
         private void frmDanhMuc_Load(object sender, EventArgs e)
@@ -34,15 +57,15 @@ namespace PM_Ban_Do_An_Nhanh
                 dgvDanhMuc.DataSource = danhMucBLL.LayDanhSachDanhMuc();
                 dgvDanhMuc.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                // Thiết lập tiêu đề cột
+                // Thiết lập tiêu đề cột với icons
                 if (dgvDanhMuc.Columns["MaDM"] != null)
-                    dgvDanhMuc.Columns["MaDM"].HeaderText = "Mã Danh Mục";
+                    dgvDanhMuc.Columns["MaDM"].HeaderText = "🔢 Mã Danh Mục";
                 if (dgvDanhMuc.Columns["TenDM"] != null)
-                    dgvDanhMuc.Columns["TenDM"].HeaderText = "Tên Danh Mục";
+                    dgvDanhMuc.Columns["TenDM"].HeaderText = "📝 Tên Danh Mục";
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi tải dữ liệu danh mục: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -66,7 +89,7 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (string.IsNullOrWhiteSpace(txtTenDanhMuc.Text))
             {
-                MessageBox.Show("Vui lòng nhập tên danh mục!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng nhập tên danh mục!", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtTenDanhMuc.Focus();
                 return;
             }
@@ -77,18 +100,18 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (result)
                 {
-                    MessageBox.Show("Thêm danh mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Thêm danh mục thành công!", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
                     ClearInputFields();
                 }
                 else
                 {
-                    MessageBox.Show("Thêm danh mục thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Thêm danh mục thất bại!", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi thêm danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi thêm danh mục: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -96,13 +119,13 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (selectedMaDM == -1)
             {
-                MessageBox.Show("Vui lòng chọn danh mục cần sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn danh mục cần sửa!", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtTenDanhMuc.Text))
             {
-                MessageBox.Show("Vui lòng nhập tên danh mục!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng nhập tên danh mục!", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtTenDanhMuc.Focus();
                 return;
             }
@@ -113,18 +136,18 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (result)
                 {
-                    MessageBox.Show("Sửa danh mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Sửa danh mục thành công!", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
                     ClearInputFields();
                 }
                 else
                 {
-                    MessageBox.Show("Sửa danh mục thất bại!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Sửa danh mục thất bại!", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi sửa danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi sửa danh mục: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -132,13 +155,13 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (selectedMaDM == -1)
             {
-                MessageBox.Show("Vui lòng chọn danh mục cần xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn danh mục cần xóa!", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             DialogResult confirmResult = MessageBox.Show(
-                $"Bạn có chắc chắn muốn xóa danh mục '{txtTenDanhMuc.Text}'?",
-                "Xác nhận xóa",
+                $"Bạn có chắc chắn muốn xóa danh mục '{txtTenDanhMuc.Text}'?\n\n⚠️ Lưu ý: Xóa danh mục sẽ ảnh hưởng đến các món ăn thuộc danh mục này!",
+                "🗑️ Xác nhận xóa",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question
             );
@@ -151,20 +174,27 @@ namespace PM_Ban_Do_An_Nhanh
 
                     if (result)
                     {
-                        MessageBox.Show("Xóa danh mục thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Xóa danh mục thành công!", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LoadDataToDataGridView();
                         ClearInputFields();
                     }
                     else
                     {
-                        MessageBox.Show("Xóa danh mục thất bại! Có thể danh mục đang được sử dụng.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Xóa danh mục thất bại! Có thể danh mục đang được sử dụng bởi các món ăn khác.", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Lỗi khi xóa danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Lỗi khi xóa danh mục: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void btnLamMoi_Click(object sender, EventArgs e)
+        {
+            LoadDataToDataGridView();
+            ClearInputFields();
+            MessageBox.Show("Đã làm mới dữ liệu!", "🔄 Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ClearInputFields()

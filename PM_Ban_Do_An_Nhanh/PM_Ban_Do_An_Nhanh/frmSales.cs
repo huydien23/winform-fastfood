@@ -238,8 +238,25 @@ namespace PM_Ban_Do_An_Nhanh
             btnXoaKH.ForeColor = Color.White;
             btnXoaKH.FlatStyle = FlatStyle.Flat;
 
+            // Add Customer button
+            Button btnThemKH = new Button();
+            btnThemKH.Text = "👤 Thêm KH";
+            btnThemKH.Size = new Size(110, 35);
+            btnThemKH.Location = new Point(550, 15);
+            btnThemKH.BackColor = Color.FromArgb(46, 204, 113);
+            btnThemKH.ForeColor = Color.White;
+            btnThemKH.FlatStyle = FlatStyle.Flat;
+            btnThemKH.FlatAppearance.BorderSize = 0;
+            btnThemKH.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            btnThemKH.Cursor = Cursors.Hand;
+            btnThemKH.Click += btnThemKH_Click;
+
+            // Add tooltip for better UX
+            ToolTip toolTip = new ToolTip();
+            toolTip.SetToolTip(btnThemKH, "Thêm khách hàng mới");
+
             searchPanel.Controls.AddRange(new Control[] {
-                txtSDTKhachHang, btnTimKH, btnXoaKH
+                txtSDTKhachHang, btnTimKH, btnXoaKH, btnThemKH
             });
 
             // DataGridView
@@ -257,6 +274,45 @@ namespace PM_Ban_Do_An_Nhanh
                 searchPanel.Size = new Size(tabCustomer.Width, 60);
                 dgvKhachHang.Size = new Size(tabCustomer.Width, tabCustomer.Height - 155);
             };
+        }
+
+        private void btnThemKH_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Get the phone number from search textbox if it's not a placeholder
+                string sdtInput = txtSDTKhachHang.Text.Trim();
+                string sdtToPass = "";
+
+                // Only pass the phone number if it's not empty and looks like a valid phone number
+                if (!string.IsNullOrWhiteSpace(sdtInput) && sdtInput.All(c => char.IsDigit(c) || c == '+' || c == '-' || c == ' '))
+                {
+                    sdtToPass = sdtInput;
+                }
+
+                // Open the Add Customer form
+                using (frmAddCustomer frmAdd = new frmAddCustomer(sdtToPass))
+                {
+                    frmAdd.StartPosition = FormStartPosition.CenterParent;
+
+                    if (frmAdd.ShowDialog(this) == DialogResult.OK)
+                    {
+                        // Refresh the customer list
+                        LoadKhachHangToGrid();
+
+                        // Clear the search textbox
+                        txtSDTKhachHang.Clear();
+
+                        MessageBox.Show("Khách hàng đã được thêm thành công!", "Thông báo",
+                                       MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi mở form thêm khách hàng: " + ex.Message, "Lỗi",
+                               MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void SetupOrderPanelContent(Control parent)

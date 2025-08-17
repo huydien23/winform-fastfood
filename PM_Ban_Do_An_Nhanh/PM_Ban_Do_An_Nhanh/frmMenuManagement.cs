@@ -1,5 +1,6 @@
 ﻿using PM_Ban_Do_An_Nhanh.BLL;
 using PM_Ban_Do_An_Nhanh.Helpers;
+using PM_Ban_Do_An_Nhanh.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -23,11 +24,40 @@ namespace PM_Ban_Do_An_Nhanh
         public frmMenuManagement()
         {
             InitializeComponent();
-            this.Text = "Quản lý thực đơn";
+            this.Text = "🍽️ Quản lý thực đơn";
             LoadDataToDataGridView();
             LoadDanhMucToComboBox();
             SetupTrangThaiComboBox();
             ClearInputFields();
+            SetupButtonStyles();
+        }
+
+        private void SetupButtonStyles()
+        {
+            // Style buttons với icons và tooltips
+            ButtonStyleHelper.ApplySuccessStyle(btnThem, "➕ Thêm món", "Thêm món ăn mới vào thực đơn", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyWarningStyle(btnSua, "✏️ Sửa món", "Chỉnh sửa thông tin món ăn đã chọn", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyDangerStyle(btnXoa, "🗑️ Xóa món", "Xóa món ăn đã chọn khỏi thực đơn", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyInfoStyle(btnLamMoi, "🔄 Làm mới", "Làm mới danh sách và xóa form", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyPrimaryStyle(btnChonHinh, "🖼️ Chọn hình", "Chọn hình ảnh cho món ăn", ButtonSize.Medium);
+
+            // Style các controls khác
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtTenMon);
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtGia);
+            ButtonStyleHelper.ApplyModernComboBoxStyle(cboDanhMuc);
+            ButtonStyleHelper.ApplyModernComboBoxStyle(cboTrangThai);
+
+            // Style DataGridView
+            ButtonStyleHelper.ApplyModernDataGridViewStyle(dgvMonAn, "warning");
+
+            // Style form
+            this.BackColor = Color.FromArgb(248, 249, 250);
+            this.Font = new Font("Segoe UI", 10F);
+
+            // Style PictureBox
+            picHinhAnh.BorderStyle = BorderStyle.FixedSingle;
+            picHinhAnh.SizeMode = PictureBoxSizeMode.Zoom;
+            picHinhAnh.BackColor = Color.White;
         }
 
         private void LoadDataToDataGridView()
@@ -37,18 +67,19 @@ namespace PM_Ban_Do_An_Nhanh
                 dgvMonAn.DataSource = monAnBLL.HienThiDanhSachMonAn();
                 dgvMonAn.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 
-                dgvMonAn.Columns["MaMon"].HeaderText = "Mã Món";
-                dgvMonAn.Columns["TenMon"].HeaderText = "Tên Món";
-                dgvMonAn.Columns["Gia"].HeaderText = "Giá";
+                // Thiết lập tiêu đề cột với icons
+                dgvMonAn.Columns["MaMon"].HeaderText = "🔢 Mã Món";
+                dgvMonAn.Columns["TenMon"].HeaderText = "🍽️ Tên Món";
+                dgvMonAn.Columns["Gia"].HeaderText = "💰 Giá";
                 dgvMonAn.Columns["Gia"].DefaultCellStyle.Format = "N0";
                 dgvMonAn.Columns["MaDM"].Visible = false;
-                dgvMonAn.Columns["TenDM"].HeaderText = "Danh Mục";
-                dgvMonAn.Columns["TrangThai"].HeaderText = "Trạng Thái";
+                dgvMonAn.Columns["TenDM"].HeaderText = "📂 Danh Mục";
+                dgvMonAn.Columns["TrangThai"].HeaderText = "📊 Trạng Thái";
                 dgvMonAn.Columns["HinhAnh"].Visible = false; // Ẩn cột đường dẫn ảnh
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải dữ liệu món ăn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi tải dữ liệu món ăn: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -58,18 +89,19 @@ namespace PM_Ban_Do_An_Nhanh
             {
                 DataTable dtDanhMuc = danhMucBLL.LayDanhSachDanhMuc();
                 cboDanhMuc.DataSource = dtDanhMuc;
-                cboDanhMuc.DisplayMember = "TenDM"; 
-                cboDanhMuc.ValueMember = "MaDM"; 
-                cboDanhMuc.SelectedIndex = -1; 
+                cboDanhMuc.DisplayMember = "TenDM";
+                cboDanhMuc.ValueMember = "MaDM";
+                cboDanhMuc.SelectedIndex = -1;
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi khi tải danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi khi tải danh mục: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
         private void SetupTrangThaiComboBox()
         {
+            cboTrangThai.Items.Clear();
             cboTrangThai.Items.Add("Còn hàng");
             cboTrangThai.Items.Add("Hết hàng");
             cboTrangThai.SelectedIndex = 0;
@@ -114,7 +146,7 @@ namespace PM_Ban_Do_An_Nhanh
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "⚠️ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 picHinhAnh.Image?.Dispose();
                 picHinhAnh.Image = null;
             }
@@ -133,18 +165,18 @@ namespace PM_Ban_Do_An_Nhanh
             {
                 if (monAnBLL.ThemMonAn(tenMon, gia, maDM, trangThai, selectedImagePath))
                 {
-                    MessageBox.Show("Thêm món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Thêm món ăn thành công! 🎉", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
                     ClearInputFields();
                 }
                 else
                 {
-                    MessageBox.Show("Thêm món ăn thất bại. Vui lòng kiểm tra lại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Thêm món ăn thất bại. Vui lòng kiểm tra lại.", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi: " + ex.Message, "❌ Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -152,7 +184,7 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (selectedMonAnId == -1)
             {
-                MessageBox.Show("Vui lòng chọn món ăn cần sửa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn món ăn cần sửa.", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
             if (!ValidateInput()) return;
@@ -166,18 +198,18 @@ namespace PM_Ban_Do_An_Nhanh
             {
                 if (monAnBLL.SuaMonAn(selectedMonAnId, tenMon, gia, maDM, trangThai, selectedImagePath))
                 {
-                    MessageBox.Show("Sửa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Sửa món ăn thành công! 🎉", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadDataToDataGridView();
                     ClearInputFields();
                 }
                 else
                 {
-                    MessageBox.Show("Sửa món ăn thất bại. Vui lòng kiểm tra lại.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Sửa món ăn thất bại. Vui lòng kiểm tra lại.", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Lỗi: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Lỗi: " + ex.Message, "❌ Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -185,28 +217,28 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (selectedMonAnId == -1)
             {
-                MessageBox.Show("Vui lòng chọn món ăn cần xóa.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn món ăn cần xóa.", "⚠️ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (MessageBox.Show("Bạn có chắc chắn muốn xóa món ăn này?", "Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show($"Bạn có chắc chắn muốn xóa món ăn '{txtTenMon.Text}'?\n\n⚠️ Lưu ý: Món ăn sẽ bị xóa vĩnh viễn!", "🗑️ Xác nhận xóa", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
                     if (monAnBLL.XoaMonAn(selectedMonAnId))
                     {
-                        MessageBox.Show("Xóa món ăn thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Xóa món ăn thành công! 🎉", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LoadDataToDataGridView();
                         ClearInputFields();
                     }
                     else
                     {
-                        MessageBox.Show("Xóa món ăn thất bại. Có thể món ăn này đang được sử dụng trong các đơn hàng hoặc có ràng buộc khác.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Xóa món ăn thất bại. Có thể món ăn này đang được sử dụng trong các đơn hàng hoặc có ràng buộc khác.", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Lỗi: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Lỗi: " + ex.Message, "❌ Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -215,28 +247,33 @@ namespace PM_Ban_Do_An_Nhanh
         {
             ClearInputFields();
             LoadDataToDataGridView();
+            MessageBox.Show("Đã làm mới dữ liệu! 🔄", "🔄 Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private bool ValidateInput()
         {
             if (string.IsNullOrWhiteSpace(txtTenMon.Text))
             {
-                MessageBox.Show("Vui lòng nhập tên món ăn.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Vui lòng nhập tên món ăn.", "⚠️ Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtTenMon.Focus();
                 return false;
             }
-            if (!decimal.TryParse(txtGia.Text, out decimal gia))
+            if (!decimal.TryParse(txtGia.Text, out decimal gia) || gia <= 0)
             {
-                MessageBox.Show("Giá phải là một số hợp lệ.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Giá phải là một số hợp lệ và lớn hơn 0.", "⚠️ Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtGia.Focus();
                 return false;
             }
             if (cboDanhMuc.SelectedValue == null)
             {
-                MessageBox.Show("Vui lòng chọn danh mục cho món ăn.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Vui lòng chọn danh mục cho món ăn.", "⚠️ Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                cboDanhMuc.Focus();
                 return false;
             }
             if (cboTrangThai.SelectedItem == null)
             {
-                MessageBox.Show("Vui lòng chọn trạng thái món ăn.", "Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Vui lòng chọn trạng thái món ăn.", "⚠️ Lỗi nhập liệu", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                cboTrangThai.Focus();
                 return false;
             }
             return true;
@@ -259,9 +296,10 @@ namespace PM_Ban_Do_An_Nhanh
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp|All Files|*.*";
                 openFileDialog.Title = "Chọn hình ảnh món ăn";
-                
+                openFileDialog.Multiselect = false;
+
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
@@ -269,10 +307,11 @@ namespace PM_Ban_Do_An_Nhanh
                         selectedImagePath = openFileDialog.FileName;
                         picHinhAnh.Image?.Dispose();
                         picHinhAnh.Image = Image.FromFile(selectedImagePath);
+                        MessageBox.Show("Đã chọn hình ảnh thành công! 📷", "✅ Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"Lỗi khi tải ảnh: {ex.Message}", "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         selectedImagePath = "";
                     }
                 }
@@ -280,5 +319,3 @@ namespace PM_Ban_Do_An_Nhanh
         }
     }
 }
-
-

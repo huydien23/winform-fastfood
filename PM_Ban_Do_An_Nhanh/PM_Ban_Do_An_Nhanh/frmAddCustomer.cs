@@ -1,4 +1,5 @@
 ﻿using PM_Ban_Do_An_Nhanh.BLL;
+using PM_Ban_Do_An_Nhanh.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +22,26 @@ namespace PM_Ban_Do_An_Nhanh
             this.Text = "Thêm khách hàng mới";
             txtSDT.Text = sdt;
             dtpNgaySinh.Checked = false;
-            LoadKhachHangToGridView(); 
+            LoadKhachHangToGridView();
+            SetupButtonStyles();
+        }
+
+        private void SetupButtonStyles()
+        {
+            // Style buttons với icons và tooltips
+            ButtonStyleHelper.ApplySuccessStyle(btnLuu, "💾 Lưu", "Lưu thông tin khách hàng", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyWarningStyle(btnSua, "✏️ Sửa", "Chỉnh sửa khách hàng đã chọn", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyDangerStyle(btnHuy, "❌ Hủy", "Hủy và đóng form", ButtonSize.Medium);
+            ButtonStyleHelper.ApplyDangerStyle(btnXoa, "🗑️ Xóa", "Xóa khách hàng đã chọn", ButtonSize.Medium);
+            
+            // Style các controls khác
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtTenKH);
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtSDT);
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtDiaChi);
+            ButtonStyleHelper.ApplyModernTextBoxStyle(txtEmail);
+            
+            // Style DataGridView
+            ButtonStyleHelper.ApplyModernDataGridViewStyle(dgvKhachHang, "primary");
         }
 
         private void btnLuu_Click(object sender, EventArgs e)

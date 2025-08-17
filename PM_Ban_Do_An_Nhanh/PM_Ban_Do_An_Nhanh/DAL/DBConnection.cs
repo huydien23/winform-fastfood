@@ -9,7 +9,7 @@ namespace PM_Ban_Do_An_Nhanh
 {
     public static class DBConnection
     {
-        private static string connectionString = "Data Source=HUYDIEN;Initial Catalog=FFDB;Integrated Security=True";
+        private static string connectionString = "Data Source=DESKTOP-EHVGUF7;Initial Catalog=FastFoodDB;Integrated Security=True";
 
         public static SqlConnection GetConnection()
         {
