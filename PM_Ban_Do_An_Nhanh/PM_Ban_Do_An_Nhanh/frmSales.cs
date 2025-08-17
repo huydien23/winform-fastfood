@@ -114,79 +114,83 @@ namespace PM_Ban_Do_An_Nhanh
             }
         }
 
-                 private void SetupMenuPanelContent(Control parent)
-         {
-             // Header panel for menu
-             Panel headerPanel = new Panel();
-             headerPanel.Location = new Point(0, 0);
-             headerPanel.Size = new Size(parent.Width, 70);
-             headerPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-             headerPanel.BackColor = Color.White;
-             headerPanel.Padding = new Padding(16);
+        private void SetupMenuPanelContent(Control parent)
+        {
+            // Header panel for menu
+            Panel headerPanel = new Panel();
+            headerPanel.Location = new Point(0, 0);
+            headerPanel.Size = new Size(parent.Width, 70);
+            headerPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            headerPanel.BackColor = Color.White;
+            headerPanel.Padding = new Padding(16);
 
-             // Title
-             Label titleLabel = new Label();
-             titleLabel.Text = "🍔 THỰC ĐƠN";
-             titleLabel.Font = new System.Drawing.Font("Segoe UI", 14F, FontStyle.Bold);
-             titleLabel.ForeColor = Color.FromArgb(52, 152, 219);
-             titleLabel.Location = new Point(16, 20);
-             titleLabel.Size = new Size(180, 30);
-             titleLabel.TextAlign = ContentAlignment.MiddleLeft;
+            // Title
+            Label titleLabel = new Label();
+            titleLabel.Text = "🍔 THỰC ĐƠN";
+            titleLabel.Font = new System.Drawing.Font("Segoe UI", 14F, FontStyle.Bold);
+            titleLabel.ForeColor = Color.FromArgb(52, 152, 219);
+            titleLabel.Location = new Point(16, 20);
+            titleLabel.Size = new Size(180, 30);
+            titleLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-             // Search box
-             txtSearchMenu.Location = new Point(parent.Width - 300, 19);
-             txtSearchMenu.Size = new Size(280, 32);
-             txtSearchMenu.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-             txtSearchMenu.Text = "Tìm kiếm món ăn...";
-             txtSearchMenu.ForeColor = Color.Gray;
+            // Search box
+            txtSearchMenu.Location = new Point(parent.Width - 300, 19);
+            txtSearchMenu.Size = new Size(280, 32);
+            txtSearchMenu.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            txtSearchMenu.Text = "Tìm kiếm món ăn...";
+            txtSearchMenu.ForeColor = Color.Gray;
 
-             // Add placeholder behavior for search
-             txtSearchMenu.GotFocus += (s, e) => {
-                 if (txtSearchMenu.Text == "Tìm kiếm món ăn...")
-                 {
-                     txtSearchMenu.Text = "";
-                     txtSearchMenu.ForeColor = Color.Black;
-                 }
-             };
+            // Add placeholder behavior for search
+            txtSearchMenu.GotFocus += (s, e) =>
+            {
+                if (txtSearchMenu.Text == "Tìm kiếm món ăn...")
+                {
+                    txtSearchMenu.Text = "";
+                    txtSearchMenu.ForeColor = Color.Black;
+                }
+            };
 
-             txtSearchMenu.LostFocus += (s, e) => {
-                 if (string.IsNullOrWhiteSpace(txtSearchMenu.Text))
-                 {
-                     txtSearchMenu.Text = "Tìm kiếm món ăn...";
-                     txtSearchMenu.ForeColor = Color.Gray;
-                 }
-             };
+            txtSearchMenu.LostFocus += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtSearchMenu.Text))
+                {
+                    txtSearchMenu.Text = "Tìm kiếm món ăn...";
+                    txtSearchMenu.ForeColor = Color.Gray;
+                }
+            };
 
-             txtSearchMenu.TextChanged += (s, e) => {
-                 string searchText = txtSearchMenu.Text.Trim().ToLowerInvariant();
-                 if (searchText != "tìm kiếm món ăn...")
-                 {
-                     FilterMenuItems(searchText);
-                 }
-             };
+            txtSearchMenu.TextChanged += (s, e) =>
+            {
+                string searchText = txtSearchMenu.Text.Trim().ToLowerInvariant();
+                if (searchText != "tìm kiếm món ăn...")
+                {
+                    FilterMenuItems(searchText);
+                }
+            };
 
-             headerPanel.Controls.AddRange(new Control[] { titleLabel, txtSearchMenu });
+            headerPanel.Controls.AddRange(new Control[] { titleLabel, txtSearchMenu });
 
-             // Menu panel
-             pnlMonAn.Location = new Point(0, 85); // 70px header + 15px margin
-             pnlMonAn.Size = new Size(parent.Width, parent.Height - 85);
-             pnlMonAn.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-             pnlMonAn.AutoScroll = true;
-             pnlMonAn.BackColor = Color.FromArgb(248, 249, 250);
-             pnlMonAn.Padding = new Padding(15, 15, 15, 15);
-             pnlMonAn.FlowDirection = FlowDirection.LeftToRight;
-             pnlMonAn.WrapContents = true;
+            // Menu panel
+            pnlMonAn.Location = new Point(0, 85); // 70px header + 15px margin
+            pnlMonAn.Size = new Size(parent.Width, parent.Height - 85);
+            pnlMonAn.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            pnlMonAn.AutoScroll = true;
+            pnlMonAn.BackColor = Color.FromArgb(248, 249, 250);
+            pnlMonAn.Padding = new Padding(15, 15, 15, 15);
+            pnlMonAn.FlowDirection = FlowDirection.LeftToRight;
+            pnlMonAn.WrapContents = true;
 
-             // Add controls to parent
-             parent.Controls.AddRange(new Control[] { headerPanel, pnlMonAn });
+            // Add controls to parent
+            parent.Controls.AddRange(new Control[] { headerPanel, pnlMonAn });
 
-             // Handle parent resize
-             parent.Resize += (s, e) => {
-                 headerPanel.Size = new Size(parent.Width, 70);
-                 txtSearchMenu.Location = new Point(parent.Width - 300, 19);
-                 pnlMonAn.Size = new Size(parent.Width, parent.Height - 85);
-             };
-         }
+            // Handle parent resize
+            parent.Resize += (s, e) =>
+            {
+                headerPanel.Size = new Size(parent.Width, 70);
+                txtSearchMenu.Location = new Point(parent.Width - 300, 19);
+                pnlMonAn.Size = new Size(parent.Width, parent.Height - 85);
+            };
+        }
 
         private void SetupCustomerTabContent()
         {
@@ -247,7 +251,8 @@ namespace PM_Ban_Do_An_Nhanh
             tabCustomer.Controls.AddRange(new Control[] { headerPanel, searchPanel, dgvKhachHang });
 
             // Handle tab resize
-            tabCustomer.Resize += (s, e) => {
+            tabCustomer.Resize += (s, e) =>
+            {
                 headerPanel.Size = new Size(tabCustomer.Width, 80);
                 searchPanel.Size = new Size(tabCustomer.Width, 60);
                 dgvKhachHang.Size = new Size(tabCustomer.Width, tabCustomer.Height - 155);
@@ -272,10 +277,10 @@ namespace PM_Ban_Do_An_Nhanh
 
             headerPanel.Controls.Add(titleLabel);
 
-            // Footer with total and actions
+            // Footer with actions (increased height to include total section)
             Panel footerPanel = CreateOrderFooterContent();
             footerPanel.Dock = DockStyle.Bottom;
-            footerPanel.Height = 250;
+            footerPanel.Height = 240;
 
             // DataGridView for order list
             dgvOrderList.Dock = DockStyle.Fill;
@@ -288,6 +293,30 @@ namespace PM_Ban_Do_An_Nhanh
             Panel footer = new Panel();
             footer.BackColor = Color.White;
             footer.Padding = new Padding(16);
+
+            // Total section (positioned after order list, before action buttons)
+            Panel totalSection = new Panel();
+            totalSection.Dock = DockStyle.Top;
+            totalSection.Height = 60;
+            totalSection.BackColor = Color.FromArgb(46, 204, 113);
+            totalSection.Padding = new Padding(16, 12, 16, 12);
+
+            Label lblTotalTitle = new Label();
+            lblTotalTitle.Text = "💰 TỔNG CỘNG:";
+            lblTotalTitle.Font = new System.Drawing.Font("Segoe UI", 12F, FontStyle.Bold);
+            lblTotalTitle.ForeColor = Color.White;
+            lblTotalTitle.Location = new Point(16, 8);
+            lblTotalTitle.Size = new Size(150, 20);
+            lblTotalTitle.TextAlign = ContentAlignment.MiddleLeft;
+
+            lblTongTien.Text = "0 VNĐ";
+            lblTongTien.Font = new System.Drawing.Font("Segoe UI", 16F, FontStyle.Bold);
+            lblTongTien.ForeColor = Color.White;
+            lblTongTien.Location = new Point(16, 28);
+            lblTongTien.Size = new Size(300, 24);
+            lblTongTien.TextAlign = ContentAlignment.MiddleLeft;
+
+            totalSection.Controls.AddRange(new Control[] { lblTotalTitle, lblTongTien });
 
             // Customer section
             Panel customerSection = new Panel();
@@ -352,36 +381,6 @@ namespace PM_Ban_Do_An_Nhanh
 
             orderActionsSection.Controls.Add(orderActionsFlow);
 
-            // Total section
-            Panel totalSection = new Panel();
-            totalSection.Dock = DockStyle.Top;
-            totalSection.Height = 60;
-            totalSection.BackColor = Color.FromArgb(46, 204, 113);
-            totalSection.Padding = new Padding(16, 12, 16, 12);
-
-            Label lblTotalIcon = new Label();
-            lblTotalIcon.Text = "💰";
-            lblTotalIcon.Font = new System.Drawing.Font("Segoe UI", 14F);
-            lblTotalIcon.ForeColor = Color.White;
-            lblTotalIcon.Location = new Point(16, 20);
-            lblTotalIcon.Size = new Size(30, 25);
-
-            Label lblTotalText = new Label();
-            lblTotalText.Text = "TỔNG CỘNG:";
-            lblTotalText.Font = new System.Drawing.Font("Segoe UI", 12F, FontStyle.Bold);
-            lblTotalText.ForeColor = Color.White;
-            lblTotalText.Location = new Point(50, 20);
-            lblTotalText.Size = new Size(120, 25);
-
-            lblTongTien.TextAlign = ContentAlignment.MiddleRight;
-            lblTongTien.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblTongTien.Location = new Point(280, 15);
-            lblTongTien.Size = new Size(200, 35);
-
-            totalSection.Controls.AddRange(new Control[] {
-                lblTotalIcon, lblTotalText, lblTongTien
-            });
-
             // Main action buttons section
             Panel mainActionsSection = new Panel();
             mainActionsSection.Dock = DockStyle.Bottom;
@@ -418,10 +417,14 @@ namespace PM_Ban_Do_An_Nhanh
 
             mainActionsSection.Controls.Add(mainActionsFlow);
 
-            // Add all sections to footer
-            footer.Controls.AddRange(new Control[] {
-                customerSection, orderActionsSection, totalSection, mainActionsSection
-            });
+            // Add sections in correct order for proper display
+            // First add bottom-docked controls 
+            footer.Controls.Add(mainActionsSection);  // Will be at bottom
+            
+            // Then add top-docked controls (in order since first added appears at top)
+            footer.Controls.Add(customerSection);     // Will be at top
+            footer.Controls.Add(totalSection);        // Will be below customer section
+            footer.Controls.Add(orderActionsSection); // Will be below total section
 
             return footer;
         }
@@ -445,7 +448,8 @@ namespace PM_Ban_Do_An_Nhanh
             }
 
             // Add hover effects
-            btn.MouseEnter += (s, e) => {
+            btn.MouseEnter += (s, e) =>
+            {
                 btn.BackColor = Color.FromArgb(
                     Math.Min(255, backgroundColor.R + 20),
                     Math.Min(255, backgroundColor.G + 20),
@@ -455,7 +459,7 @@ namespace PM_Ban_Do_An_Nhanh
             btn.MouseLeave += (s, e) => btn.BackColor = backgroundColor;
         }
 
-                private void SetupHistoryTabContent()
+        private void SetupHistoryTabContent()
         {
             // Clear existing controls first
             tabHistory.Controls.Clear();
@@ -509,7 +513,7 @@ namespace PM_Ban_Do_An_Nhanh
             btnXoaTatCaHoaDon.ForeColor = Color.White;
             btnXoaTatCaHoaDon.FlatStyle = FlatStyle.Flat;
             btnXoaTatCaHoaDon.Font = new System.Drawing.Font("Segoe UI", 10F);
-            btnXoaTatCaHoaDon.Click += btnXoaTatCaHoaDon_Click;
+            btnXoaTatCaHoaDon.Click += btnXoaDonHangTrungLap_Click;
 
             actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf, btnXoaTatCaHoaDon });
 
@@ -522,7 +526,8 @@ namespace PM_Ban_Do_An_Nhanh
             tabHistory.Controls.AddRange(new Control[] { headerPanel, actionPanel, dgvHoaDon });
 
             // Handle tab resize
-            tabHistory.Resize += (s, e) => {
+            tabHistory.Resize += (s, e) =>
+            {
                 headerPanel.Size = new Size(tabHistory.Width, 80);
                 actionPanel.Location = new Point(0, tabHistory.Height - 60);
                 actionPanel.Size = new Size(tabHistory.Width, 60);
@@ -566,19 +571,19 @@ namespace PM_Ban_Do_An_Nhanh
                         mainTabControl.SelectedTab = tabOrder;
                     };
 
-                                         pnlMonAn.Controls.Add(card);
-                 }
-             }
-             catch (Exception ex)
-             {
-                 MessageBox.Show("Lỗi khi tải danh sách món ăn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-             }
-             
-             // Force scroll về top và refresh layout sau khi add cards
-             pnlMonAn.VerticalScroll.Value = 0;
-             pnlMonAn.PerformLayout();
-             pnlMonAn.Refresh();
-         }
+                    pnlMonAn.Controls.Add(card);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tải danh sách món ăn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Force scroll về top và refresh layout sau khi add cards
+            pnlMonAn.VerticalScroll.Value = 0;
+            pnlMonAn.PerformLayout();
+            pnlMonAn.Refresh();
+        }
 
         private void SetupOrderDataGridView()
         {
@@ -663,24 +668,17 @@ namespace PM_Ban_Do_An_Nhanh
         private void UpdateOrderDisplay()
         {
             dgvOrderList.Rows.Clear();
-            decimal totalAmount = 0;
+            decimal tongTien = 0;
+            
             foreach (var item in currentOrderItems)
             {
                 decimal thanhTien = item.SoLuong * item.DonGia;
                 dgvOrderList.Rows.Add(item.MaMon, item.TenMon, item.SoLuong, item.DonGia, thanhTien);
-                totalAmount += thanhTien;
+                tongTien += thanhTien;
             }
-
             
-            lblTongTien.Text = totalAmount.ToString("N0") + " VNĐ";
-
-           
-            System.Diagnostics.Debug.WriteLine($"UpdateOrderDisplay: Total = {totalAmount:N0} VNĐ");
-            System.Diagnostics.Debug.WriteLine($"lblTongTien.Text = {lblTongTien.Text}");
-
-           
-            lblTongTien.Invalidate();
-            lblTongTien.Update();
+            // Cập nhật hiển thị tổng tiền
+            lblTongTien.Text = $"{tongTien:N0} VNĐ";
         }
 
         private void ClearOrder()
@@ -688,6 +686,8 @@ namespace PM_Ban_Do_An_Nhanh
             currentOrderItems.Clear();
             UpdateOrderDisplay();
             ClearCustomerInfo();
+            // Đặt lại tổng tiền về 0
+            lblTongTien.Text = "0 VNĐ";
         }
 
         private void ClearCustomerInfo()
@@ -1015,7 +1015,7 @@ namespace PM_Ban_Do_An_Nhanh
                     string tenMon = row["TenMon"].ToString().ToLowerInvariant();
 
                     if (string.IsNullOrEmpty(searchText) || tenMon.Contains(searchText))
-                        {
+                    {
                         var card = new MenuItemCard();
                         int maMon = Convert.ToInt32(row["MaMon"]);
                         string originalTenMon = row["TenMon"].ToString();
@@ -1042,20 +1042,20 @@ namespace PM_Ban_Do_An_Nhanh
                             mainTabControl.SelectedTab = tabOrder;
                         };
 
-                                                 pnlMonAn.Controls.Add(card);
-                     }
-                 }
-             }
-             catch (Exception ex)
-             {
-                 MessageBox.Show("Lỗi khi tìm kiếm món ăn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-             }
-             
-             // Force scroll về top và refresh layout sau khi filter
-             pnlMonAn.VerticalScroll.Value = 0;
-             pnlMonAn.PerformLayout();
-             pnlMonAn.Refresh();
-         }
+                        pnlMonAn.Controls.Add(card);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tìm kiếm món ăn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // Force scroll về top và refresh layout sau khi filter
+            pnlMonAn.VerticalScroll.Value = 0;
+            pnlMonAn.PerformLayout();
+            pnlMonAn.Refresh();
+        }
 
         private string FindImageForMon(string tenMon)
         {
@@ -1256,86 +1256,5 @@ namespace PM_Ban_Do_An_Nhanh
                 MessageBox.Show("Lỗi khi tải danh sách hóa đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        #region Deprecated Methods (kept for compatibility)
-
-        private void BtnMonAn_Click(object sender, EventArgs e)
-        {
-            Button clickedButton = sender as Button;
-            int maMon = Convert.ToInt32(clickedButton.Tag);
-
-            try
-            {
-                DataTable dtMonAn = monAnBLL.HienThiDanhSachMonAn();
-                DataRow selectedMonAnRow = dtMonAn.AsEnumerable().FirstOrDefault(r => r.Field<int>("MaMon") == maMon);
-
-                if (selectedMonAnRow != null)
-                {
-                    string tenMon = selectedMonAnRow.Field<string>("TenMon");
-                    decimal donGia = selectedMonAnRow.Field<decimal>("Gia");
-
-                    AddItemToOrderList(maMon, tenMon, donGia);
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Lỗi khi thêm món vào đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void btnPrintBill_Click(object sender, EventArgs e)
-        {
-            if (selectedMaDH == null)
-            {
-                MessageBox.Show("Vui lòng chọn hóa đơn để in.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            InHoaDon(selectedMaDH.Value);
-        }
-
-        private void btnXoaTatCaHoaDon_Click(object sender, EventArgs e)
-        {
-            DialogResult confirmResult = MessageBox.Show(
-                "⚠️ CẢNH BÁO: Bạn có chắc chắn muốn xóa TẤT CẢ hóa đơn?\n\n" +
-                "Hành động này sẽ xóa vĩnh viễn tất cả dữ liệu đơn hàng và không thể khôi phục!\n\n" +
-                "Bạn có muốn tiếp tục?",
-                "⚠️ Xác nhận xóa tất cả hóa đơn",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning
-            );
-
-            if (confirmResult == DialogResult.Yes)
-            {
-                // Double confirmation for safety
-                DialogResult doubleConfirm = MessageBox.Show(
-                    "Đây là xác nhận cuối cùng!\n\n" +
-                    "Tất cả hóa đơn sẽ bị xóa vĩnh viễn.\n" +
-                    "Bạn có THỰC SỰ muốn xóa tất cả?",
-                    "⚠️ Xác nhận lần cuối",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Error
-                );
-
-                if (doubleConfirm == DialogResult.Yes)
-                {
-                    try
-                    {
-                        string result = donHangBLL.XoaTatCaDonHang();
-                        MessageBox.Show(result, "Kết quả", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        // Refresh the grid and clear selection
-                        LoadHoaDonToGrid();
-                        selectedMaDH = null;
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("Lỗi khi xóa tất cả đơn hàng: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            }
-        }
-
-        #endregion
     }
 }
