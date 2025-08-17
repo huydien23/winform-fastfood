@@ -144,6 +144,9 @@ namespace PM_Ban_Do_An_Nhanh
                 // Show loading message
                 lblTotalRevenue.Text = "Đang tải...";
 
+                // Debug: Kiểm tra dữ liệu trong database
+                CheckDatabaseData();
+
                 LoadDoanhThuReport(tuNgay, denNgay);
                 LoadMonAnBanChayReport(tuNgay, denNgay);
 
@@ -156,25 +159,106 @@ namespace PM_Ban_Do_An_Nhanh
             }
         }
 
+        private void CheckDatabaseData()
+        {
+            try
+            {
+                DataTable dtAllOrders = donHangBLL.LayDanhSachDonHang();
+                Console.WriteLine($"Tổng số đơn hàng trong DB: {dtAllOrders.Rows.Count}");
+                
+                if (dtAllOrders.Rows.Count > 0)
+                {
+                    Console.WriteLine("Mẫu đơn hàng:");
+                    for (int i = 0; i < Math.Min(3, dtAllOrders.Rows.Count); i++)
+                    {
+                        Console.WriteLine($"Đơn hàng {i}: MaDH={dtAllOrders.Rows[i]["MaDH"]}, NgayLap={dtAllOrders.Rows[i]["NgayLap"]}, TongTien={dtAllOrders.Rows[i]["TongTien"]}, TrangThai={dtAllOrders.Rows[i]["TrangThaiThanhToan"]}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi kiểm tra dữ liệu DB: {ex.Message}");
+            }
+        }
+
         private void LoadDoanhThuReport(DateTime? tuNgay, DateTime? denNgay)
         {
-            DataTable dtDoanhThu = donHangBLL.LayThongKeDoanhThu(tuNgay, denNgay);
-            dgvDoanhThu.DataSource = dtDoanhThu;
-
-            if (dtDoanhThu.Rows.Count > 0)
+            try
             {
-                // Thiết lập tiêu đề cột với icons
-                dgvDoanhThu.Columns["Ngay"].HeaderText = "📅 Ngày";
-                dgvDoanhThu.Columns["DoanhThuNgay"].HeaderText = "💰 Doanh Thu";
-                dgvDoanhThu.Columns["DoanhThuNgay"].DefaultCellStyle.Format = "N0";
-                dgvDoanhThu.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+                DataTable dtDoanhThu = donHangBLL.LayThongKeDoanhThu(tuNgay, denNgay);
+                dgvDoanhThu.DataSource = dtDoanhThu;
 
-                decimal tongDoanhThu = dtDoanhThu.AsEnumerable().Sum(row => row.Field<decimal>("DoanhThuNgay"));
-                lblTotalRevenue.Text = $"💰 {tongDoanhThu:N0} VNĐ";
+                // Debug: Kiểm tra dữ liệu
+                Console.WriteLine($"Số dòng dữ liệu: {dtDoanhThu.Rows.Count}");
+                if (dtDoanhThu.Rows.Count > 0)
+                {
+                    Console.WriteLine("Dữ liệu mẫu:");
+                    for (int i = 0; i < Math.Min(3, dtDoanhThu.Rows.Count); i++)
+                    {
+                        Console.WriteLine($"Row {i}: Ngày={dtDoanhThu.Rows[i]["Ngay"]}, DoanhThu={dtDoanhThu.Rows[i]["DoanhThuNgay"]}");
+                    }
+                }
+
+                if (dtDoanhThu.Rows.Count > 0)
+                {
+                    // Thiết lập tiêu đề cột với icons
+                    Ngay.HeaderText = "📅 Ngày";
+                    DoanhThuNgay.HeaderText = "💰 Doanh Thu";
+                    
+                    // Thiết lập width cố định cho các cột để đều nhau
+                    Ngay.Width = 150;
+                    DoanhThuNgay.Width = 200;
+                    
+                    // Tắt AutoSizeMode để có thể set width cố định
+                    Ngay.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                    DoanhThuNgay.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+                    
+                    // Căn giữa header và cell
+                    Ngay.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    DoanhThuNgay.HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    Ngay.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                    DoanhThuNgay.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
+                    
+                    // Format số tiền
+                    DoanhThuNgay.DefaultCellStyle.Format = "N0 VNĐ";
+
+                    // Tính tổng doanh thu
+                    decimal tongDoanhThu = 0;
+                    foreach (DataRow row in dtDoanhThu.Rows)
+                    {
+                        if (row["DoanhThuNgay"] != DBNull.Value)
+                        {
+                            decimal doanhThu = Convert.ToDecimal(row["DoanhThuNgay"]);
+                            tongDoanhThu += doanhThu;
+                            Console.WriteLine($"Cộng dồn: {doanhThu:N0} -> Tổng: {tongDoanhThu:N0}");
+                        }
+                    }
+                    
+                                         Console.WriteLine($"Tổng cuối cùng: {tongDoanhThu:N0}");
+                     
+                     // Đảm bảo cập nhật UI thread
+                     if (lblTotalRevenue.InvokeRequired)
+                     {
+                         lblTotalRevenue.Invoke(new Action(() => {
+                             lblTotalRevenue.Text = $"💰 {tongDoanhThu:N0} VNĐ";
+                             lblTotalRevenue.Refresh();
+                         }));
+                     }
+                     else
+                     {
+                         lblTotalRevenue.Text = $"💰 {tongDoanhThu:N0} VNĐ";
+                         lblTotalRevenue.Refresh();
+                     }
+                }
+                else
+                {
+                    lblTotalRevenue.Text = "📊 Chưa có dữ liệu";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                lblTotalRevenue.Text = "📊 Chưa có dữ liệu";
+                Console.WriteLine($"Lỗi trong LoadDoanhThuReport: {ex.Message}");
+                lblTotalRevenue.Text = $"❌ Lỗi: {ex.Message}";
             }
         }
 

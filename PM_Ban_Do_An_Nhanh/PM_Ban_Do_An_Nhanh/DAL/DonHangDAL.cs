@@ -239,7 +239,7 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                     CAST(dh.NgayLap AS DATE) AS Ngay,
                     SUM(dh.TongTien) AS DoanhThuNgay
                 FROM DonHang dh
-                WHERE dh.TrangThaiThanhToan = N'Đã thanh toán'";
+                WHERE 1=1";
 
             if (tuNgay.HasValue)
             {

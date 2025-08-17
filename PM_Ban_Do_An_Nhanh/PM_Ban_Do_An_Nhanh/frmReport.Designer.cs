@@ -77,7 +77,7 @@
             // 
             // btnInBaoCao
             // 
-            this.btnInBaoCao.Location = new System.Drawing.Point(11, 323);
+            this.btnInBaoCao.Location = new System.Drawing.Point(11, 340);
             this.btnInBaoCao.Name = "btnInBaoCao";
             this.btnInBaoCao.Size = new System.Drawing.Size(127, 23);
             this.btnInBaoCao.TabIndex = 7;
@@ -88,12 +88,16 @@
             // 
             // lblTotalRevenue
             // 
-            this.lblTotalRevenue.Location = new System.Drawing.Point(19, 240);
+            this.lblTotalRevenue.Location = new System.Drawing.Point(29, 240);
             this.lblTotalRevenue.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblTotalRevenue.Name = "lblTotalRevenue";
-            this.lblTotalRevenue.Size = new System.Drawing.Size(111, 20);
+            this.lblTotalRevenue.Size = new System.Drawing.Size(130, 35);
             this.lblTotalRevenue.TabIndex = 6;
             this.lblTotalRevenue.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTotalRevenue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblTotalRevenue.BackColor = System.Drawing.Color.FromArgb(248, 255, 248);
+            this.lblTotalRevenue.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblTotalRevenue.ForeColor = System.Drawing.Color.Green;
             // 
             // label3
             // 
@@ -108,7 +112,7 @@
             // btnXemBaoCao
             // 
             this.btnXemBaoCao.AutoSize = true;
-            this.btnXemBaoCao.Location = new System.Drawing.Point(11, 271);
+            this.btnXemBaoCao.Location = new System.Drawing.Point(11, 290);
             this.btnXemBaoCao.Margin = new System.Windows.Forms.Padding(2);
             this.btnXemBaoCao.Name = "btnXemBaoCao";
             this.btnXemBaoCao.Size = new System.Drawing.Size(105, 25);
