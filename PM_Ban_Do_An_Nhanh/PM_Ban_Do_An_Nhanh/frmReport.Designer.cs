@@ -71,7 +71,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(152, 366);
+            this.panel1.Size = new System.Drawing.Size(170, 366);
             this.panel1.TabIndex = 0;
             this.panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.panel1_Paint);
             // 
@@ -83,6 +83,7 @@
             this.btnInBaoCao.TabIndex = 7;
             this.btnInBaoCao.Text = "In báo cáo";
             this.btnInBaoCao.UseVisualStyleBackColor = true;
+            this.btnInBaoCao.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnInBaoCao.Click += new System.EventHandler(this.btnInBaoCao_Click);
             // 
             // lblTotalRevenue
@@ -110,10 +111,11 @@
             this.btnXemBaoCao.Location = new System.Drawing.Point(11, 271);
             this.btnXemBaoCao.Margin = new System.Windows.Forms.Padding(2);
             this.btnXemBaoCao.Name = "btnXemBaoCao";
-            this.btnXemBaoCao.Size = new System.Drawing.Size(125, 32);
+            this.btnXemBaoCao.Size = new System.Drawing.Size(105, 25);
             this.btnXemBaoCao.TabIndex = 4;
             this.btnXemBaoCao.Text = "Xem báo cáo";
             this.btnXemBaoCao.UseVisualStyleBackColor = true;
+            this.btnXemBaoCao.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnXemBaoCao.Click += new System.EventHandler(this.btnXemBaoCao_Click);
             // 
             // dtpDenNgay

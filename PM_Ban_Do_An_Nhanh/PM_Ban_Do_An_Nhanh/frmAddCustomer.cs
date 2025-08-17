@@ -124,12 +124,55 @@ namespace PM_Ban_Do_An_Nhanh
             try
             {
                 dgvKhachHang.DataSource = khachHangBLL.HienThiDanhSachKhachHang();
-                dgvKhachHang.Columns["MaKH"].HeaderText = "Mã KH";
-                dgvKhachHang.Columns["TenKH"].HeaderText = "Tên khách hàng";
-                dgvKhachHang.Columns["SDT"].HeaderText = "Số điện thoại";
-                dgvKhachHang.Columns["DiaChi"].HeaderText = "Địa chỉ";
-                dgvKhachHang.Columns["Email"].HeaderText = "Email";
-                dgvKhachHang.Columns["NgaySinh"].HeaderText = "Ngày sinh";
+                
+                // Thiết lập độ rộng cột cân bằng và hợp lý
+                dgvKhachHang.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
+                
+                // Mã KH - compact hơn
+                if (dgvKhachHang.Columns.Contains("MaKH"))
+                {
+                    dgvKhachHang.Columns["MaKH"].HeaderText = "Mã KH";
+                    dgvKhachHang.Columns["MaKH"].Width = 80;
+                    dgvKhachHang.Columns["MaKH"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                }
+                
+                // Tên khách hàng - rộng hơn để hiển thị đầy đủ
+                if (dgvKhachHang.Columns.Contains("TenKH"))
+                {
+                    dgvKhachHang.Columns["TenKH"].HeaderText = "Tên khách hàng";
+                    dgvKhachHang.Columns["TenKH"].Width = 150;
+                }
+                
+                // SĐT - rộng hơn cho số điện thoại dài
+                if (dgvKhachHang.Columns.Contains("SDT"))
+                {
+                    dgvKhachHang.Columns["SDT"].HeaderText = "Số điện thoại";
+                    dgvKhachHang.Columns["SDT"].Width = 110;
+                    dgvKhachHang.Columns["SDT"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                }
+                
+                // Địa chỉ - vừa phải
+                if (dgvKhachHang.Columns.Contains("DiaChi"))
+                {
+                    dgvKhachHang.Columns["DiaChi"].HeaderText = "Địa chỉ";
+                    dgvKhachHang.Columns["DiaChi"].Width = 200;
+                }
+                
+                // Email - vừa phải  
+                if (dgvKhachHang.Columns.Contains("Email"))
+                {
+                    dgvKhachHang.Columns["Email"].HeaderText = "Email";
+                    dgvKhachHang.Columns["Email"].Width = 140;
+                }
+                
+                // Ngày sinh - rộng hơn để hiển thị đầy đủ
+                if (dgvKhachHang.Columns.Contains("NgaySinh"))
+                {
+                    dgvKhachHang.Columns["NgaySinh"].HeaderText = "Ngày sinh";
+                    dgvKhachHang.Columns["NgaySinh"].Width = 110;
+                    dgvKhachHang.Columns["NgaySinh"].DefaultCellStyle.Format = "dd/MM/yyyy";
+                    dgvKhachHang.Columns["NgaySinh"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+                }
             }
             catch (Exception ex)
             {

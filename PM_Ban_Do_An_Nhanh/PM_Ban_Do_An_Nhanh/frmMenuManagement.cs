@@ -75,7 +75,7 @@ namespace PM_Ban_Do_An_Nhanh
                 dgvMonAn.Columns["MaDM"].Visible = false;
                 dgvMonAn.Columns["TenDM"].HeaderText = "📂 Danh Mục";
                 dgvMonAn.Columns["TrangThai"].HeaderText = "📊 Trạng Thái";
-                dgvMonAn.Columns["HinhAnh"].Visible = false; // Ẩn cột đường dẫn ảnh
+                dgvMonAn.Columns["HinhAnh"].Visible = false; 
             }
             catch (Exception ex)
             {

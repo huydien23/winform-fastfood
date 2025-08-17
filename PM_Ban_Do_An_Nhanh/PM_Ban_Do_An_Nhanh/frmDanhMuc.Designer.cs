@@ -54,7 +54,7 @@
             this.panel1.Controls.Add(this.lblMaDanhMuc);
             this.panel1.Location = new System.Drawing.Point(0, 12);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(268, 426);
+            this.panel1.Size = new System.Drawing.Size(260, 1000);
             this.panel1.TabIndex = 0;
             // 
             // btnXoa
@@ -68,6 +68,7 @@
             this.btnXoa.TabIndex = 7;
             this.btnXoa.Text = "Xóa";
             this.btnXoa.UseVisualStyleBackColor = false;
+            this.btnXoa.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
             // btnSua
@@ -81,6 +82,7 @@
             this.btnSua.TabIndex = 6;
             this.btnSua.Text = "Sửa";
             this.btnSua.UseVisualStyleBackColor = false;
+            this.btnSua.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnSua.Click += new System.EventHandler(this.btnSua_Click);
             // 
             // btnThem
@@ -94,6 +96,7 @@
             this.btnThem.TabIndex = 5;
             this.btnThem.Text = "Thêm";
             this.btnThem.UseVisualStyleBackColor = false;
+            this.btnThem.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
             // 
             // txtTenDanhMuc

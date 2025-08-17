@@ -71,17 +71,19 @@
             this.panel1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(163)));
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(280, 593);
+            this.panel1.Size = new System.Drawing.Size(260, 593);
             this.panel1.TabIndex = 0;
             // 
             // btnChonHinh
             // 
-            this.btnChonHinh.Location = new System.Drawing.Point(25, 420);
+            this.btnChonHinh.Location = new System.Drawing.Point(60, 420);
             this.btnChonHinh.Name = "btnChonHinh";
-            this.btnChonHinh.Size = new System.Drawing.Size(182, 32);
+            this.btnChonHinh.Size = new System.Drawing.Size(180, 40);
             this.btnChonHinh.TabIndex = 14;
-            this.btnChonHinh.Text = "Chọn hình ảnh";
+            this.btnChonHinh.Text = "🖼️ Chọn hình";
+            this.btnChonHinh.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnChonHinh.UseVisualStyleBackColor = true;
+            this.btnChonHinh.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnChonHinh.Click += new System.EventHandler(this.btnChonHinh_Click);
             // 
             // picHinhAnh
@@ -105,42 +107,50 @@
             // 
             // btnLamMoi
             // 
-            this.btnLamMoi.Location = new System.Drawing.Point(25, 549);
+            this.btnLamMoi.Location = new System.Drawing.Point(60, 620);
             this.btnLamMoi.Name = "btnLamMoi";
-            this.btnLamMoi.Size = new System.Drawing.Size(182, 32);
+            this.btnLamMoi.Size = new System.Drawing.Size(180, 40);
             this.btnLamMoi.TabIndex = 11;
-            this.btnLamMoi.Text = "Làm mới";
+            this.btnLamMoi.Text = "🔄 Làm mới";
+            this.btnLamMoi.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnLamMoi.UseVisualStyleBackColor = true;
+            this.btnLamMoi.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnLamMoi.Click += new System.EventHandler(this.btnLamMoi_Click);
             // 
             // btnXoa
             // 
-            this.btnXoa.Location = new System.Drawing.Point(125, 496);
+            this.btnXoa.Location = new System.Drawing.Point(60, 570);
             this.btnXoa.Name = "btnXoa";
-            this.btnXoa.Size = new System.Drawing.Size(82, 32);
+            this.btnXoa.Size = new System.Drawing.Size(180, 40);
             this.btnXoa.TabIndex = 10;
-            this.btnXoa.Text = "Xóa";
+            this.btnXoa.Text = "🗑️ Xóa món";
+            this.btnXoa.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnXoa.UseVisualStyleBackColor = true;
+            this.btnXoa.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnXoa.Click += new System.EventHandler(this.btnXoa_Click);
             // 
             // btnSua
             // 
-            this.btnSua.Location = new System.Drawing.Point(25, 496);
+            this.btnSua.Location = new System.Drawing.Point(60, 520);
             this.btnSua.Name = "btnSua";
-            this.btnSua.Size = new System.Drawing.Size(82, 32);
+            this.btnSua.Size = new System.Drawing.Size(180, 40);
             this.btnSua.TabIndex = 9;
-            this.btnSua.Text = "Sửa";
-            this.btnSua.UseVisualStyleBackColor = true;
+            this.btnSua.Text = "✏️ Sửa món";
+            this.btnSua.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnSua.UseVisualStyleBackColor = true; 
+            this.btnSua.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnSua.Click += new System.EventHandler(this.btnSua_Click);
             // 
             // btnThem
             // 
-            this.btnThem.Location = new System.Drawing.Point(76, 458);
+            this.btnThem.Location = new System.Drawing.Point(60, 470);
             this.btnThem.Name = "btnThem";
-            this.btnThem.Size = new System.Drawing.Size(82, 32);
+            this.btnThem.Size = new System.Drawing.Size(180, 40);
             this.btnThem.TabIndex = 8;
-            this.btnThem.Text = "Thêm";
+            this.btnThem.Text = "➕ Thêm món";
+            this.btnThem.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.btnThem.UseVisualStyleBackColor = true;
+            this.btnThem.Padding = new System.Windows.Forms.Padding(10, 5, 25, 20);
             this.btnThem.Click += new System.EventHandler(this.btnThem_Click);
             // 
             // cboTrangThai
