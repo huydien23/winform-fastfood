@@ -20,6 +20,15 @@ namespace PM_Ban_Do_An_Nhanh
         private DanhMucBLL danhMucBLL = new DanhMucBLL();
         private int selectedMonAnId = -1;
         private string selectedImagePath = ""; // Đường dẫn ảnh được chọn
+        private readonly Dictionary<string, Image> imageCache = new Dictionary<string, Image>();
+        private Color defaultRowBackColor;
+        private Color defaultRowForeColor;
+        private Color defaultRowSelectionBackColor;
+        private Color defaultRowSelectionForeColor;
+        private readonly Color outOfStockBackColor = Color.FromArgb(255, 235, 238);
+        private readonly Color outOfStockForeColor = Color.FromArgb(183, 28, 28);
+        private readonly Color outOfStockSelectionBackColor = Color.FromArgb(244, 143, 177);
+        private readonly Color outOfStockSelectionForeColor = Color.White;
 
         public frmMenuManagement()
         {
@@ -30,6 +39,9 @@ namespace PM_Ban_Do_An_Nhanh
             SetupTrangThaiComboBox();
             ClearInputFields();
             SetupButtonStyles();
+            CaptureDefaultRowStyle();
+            dgvMonAn.CellFormatting += dgvMonAn_CellFormatting;
+            dgvMonAn.DataError += dgvMonAn_DataError;
         }
 
         private void SetupButtonStyles()
@@ -75,7 +87,10 @@ namespace PM_Ban_Do_An_Nhanh
                 dgvMonAn.Columns["MaDM"].Visible = false;
                 dgvMonAn.Columns["TenDM"].HeaderText = "📂 Danh Mục";
                 dgvMonAn.Columns["TrangThai"].HeaderText = "📊 Trạng Thái";
-                dgvMonAn.Columns["HinhAnh"].Visible = false; 
+                dgvMonAn.Columns["HinhAnh"].Visible = false;
+
+                EnsureImagePreviewColumn();
+                ApplyHighlightForAllRows();
             }
             catch (Exception ex)
             {
@@ -88,6 +103,7 @@ namespace PM_Ban_Do_An_Nhanh
             try
             {
                 DataTable dtDanhMuc = danhMucBLL.LayDanhSachDanhMuc();
+
                 cboDanhMuc.DataSource = dtDanhMuc;
                 cboDanhMuc.DisplayMember = "TenDM";
                 cboDanhMuc.ValueMember = "MaDM";
@@ -111,6 +127,7 @@ namespace PM_Ban_Do_An_Nhanh
         {
             if (e.RowIndex >= 0)
             {
+
                 var value = dgvMonAn.Rows[e.RowIndex].Cells["MaMon"].Value;
                 if (value != null && int.TryParse(value.ToString(), out int id))
                     selectedMonAnId = id;
@@ -124,7 +141,115 @@ namespace PM_Ban_Do_An_Nhanh
 
                 // Load ảnh hiện tại
                 string imagePath = dgvMonAn.Rows[e.RowIndex].Cells["HinhAnh"].Value?.ToString();
+                selectedImagePath = imagePath;
                 LoadImageToPictureBox(imagePath);
+            }
+        }
+
+        private void EnsureImagePreviewColumn()
+        {
+            const string columnName = "HinhAnhPreview";
+
+            if (dgvMonAn.Columns[columnName] == null)
+            {
+                var imageColumn = new DataGridViewImageColumn
+                {
+                    Name = columnName,
+                    HeaderText = "🖼️ Hình ảnh",
+                    ImageLayout = DataGridViewImageCellLayout.Zoom,
+                    Width = 120,
+                    DataPropertyName = "HinhAnh"
+                };
+
+                imageColumn.DefaultCellStyle.NullValue = null;
+
+                int insertIndex = dgvMonAn.Columns["TenMon"]?.DisplayIndex + 1 ?? dgvMonAn.Columns.Count;
+                dgvMonAn.Columns.Add(imageColumn);
+                dgvMonAn.Columns[columnName].DisplayIndex = insertIndex;
+            }
+
+            foreach (var cached in imageCache.Values)
+            {
+                cached.Dispose();
+            }
+            imageCache.Clear();
+        }
+
+        private void dgvMonAn_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            if (dgvMonAn.Columns[e.ColumnIndex].Name == "HinhAnhPreview")
+            {
+                string imagePath = dgvMonAn.Rows[e.RowIndex].Cells["HinhAnh"].Value?.ToString();
+                e.Value = GetImageFromCache(imagePath);
+                e.FormattingApplied = true;
+            }
+
+            ApplyRowStatusHighlight(e.RowIndex);
+        }
+
+        private void dgvMonAn_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            // Bỏ qua lỗi format mặc định khi binding cột hình ảnh
+            e.ThrowException = false;
+        }
+
+        private Image GetImageFromCache(string imagePath)
+        {
+            if (string.IsNullOrEmpty(imagePath)) return null;
+
+            if (imageCache.TryGetValue(imagePath, out var cachedImage))
+            {
+                return cachedImage;
+            }
+
+            var image = ImageHelper.LoadMenuItemImage(imagePath);
+            if (image != null)
+            {
+                imageCache[imagePath] = image;
+            }
+
+            return image;
+        }
+
+        private void CaptureDefaultRowStyle()
+        {
+            defaultRowBackColor = dgvMonAn.DefaultCellStyle.BackColor == Color.Empty ? Color.White : dgvMonAn.DefaultCellStyle.BackColor;
+            defaultRowForeColor = dgvMonAn.DefaultCellStyle.ForeColor == Color.Empty ? Color.Black : dgvMonAn.DefaultCellStyle.ForeColor;
+            defaultRowSelectionBackColor = dgvMonAn.DefaultCellStyle.SelectionBackColor == Color.Empty ? SystemColors.Highlight : dgvMonAn.DefaultCellStyle.SelectionBackColor;
+            defaultRowSelectionForeColor = dgvMonAn.DefaultCellStyle.SelectionForeColor == Color.Empty ? SystemColors.HighlightText : dgvMonAn.DefaultCellStyle.SelectionForeColor;
+        }
+
+        private void ApplyHighlightForAllRows()
+        {
+            for (int i = 0; i < dgvMonAn.Rows.Count; i++)
+            {
+                ApplyRowStatusHighlight(i);
+            }
+        }
+
+        private void ApplyRowStatusHighlight(int rowIndex)
+        {
+            if (rowIndex < 0 || rowIndex >= dgvMonAn.Rows.Count) return;
+
+            var row = dgvMonAn.Rows[rowIndex];
+            string status = row.Cells["TrangThai"].Value?.ToString();
+            bool isOutOfStock = !string.IsNullOrWhiteSpace(status) && status.Trim().Equals("Hết hàng", StringComparison.OrdinalIgnoreCase);
+
+            if (isOutOfStock)
+            {
+                row.DefaultCellStyle.BackColor = outOfStockBackColor;
+                row.DefaultCellStyle.ForeColor = outOfStockForeColor;
+                row.DefaultCellStyle.SelectionBackColor = outOfStockSelectionBackColor;
+                row.DefaultCellStyle.SelectionForeColor = outOfStockSelectionForeColor;
+            }
+            else
+            {
+                row.DefaultCellStyle.BackColor = defaultRowBackColor;
+                row.DefaultCellStyle.ForeColor = defaultRowForeColor;
+                row.DefaultCellStyle.SelectionBackColor = defaultRowSelectionBackColor;
+                row.DefaultCellStyle.SelectionForeColor = defaultRowSelectionForeColor;
             }
         }
 

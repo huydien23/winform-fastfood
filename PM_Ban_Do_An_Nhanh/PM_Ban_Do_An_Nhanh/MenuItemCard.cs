@@ -26,7 +26,7 @@ namespace PM_Ban_Do_An_Nhanh
             set => nudQuantity.Value = Math.Max(1, Math.Min(999, value));
         }
 
-        public void SetData(int maMon, string ten, decimal price, string imagePath = null)
+        public void SetData(int maMon, string ten, decimal price, string imagePath = null, string trangThai = null)
         {
             MaMon = maMon;
             TenMon = ten;
@@ -38,11 +38,19 @@ namespace PM_Ban_Do_An_Nhanh
             try
             {
                 string finalPath = null;
-                if (!string.IsNullOrEmpty(imagePath) && File.Exists(imagePath))
+                if (!string.IsNullOrEmpty(imagePath))
                 {
-                    finalPath = imagePath;
+                    string absolutePath = Path.IsPathRooted(imagePath)
+                        ? imagePath
+                        : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, imagePath);
+
+                    if (File.Exists(absolutePath))
+                    {
+                        finalPath = absolutePath;
+                    }
                 }
-                else
+
+                if (finalPath == null)
                 {
                     string imagesDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
                     string defaultPath = Path.Combine(imagesDir, "default.jpg");
@@ -62,6 +70,8 @@ namespace PM_Ban_Do_An_Nhanh
             {
                 // ignore image errors
             }
+
+            ApplyStockPresentation(trangThai);
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
@@ -80,6 +90,20 @@ namespace PM_Ban_Do_An_Nhanh
         protected virtual void OnAddClicked(MenuItemEventArgs e)
         {
             AddClicked?.Invoke(this, e);
+        }
+
+        private void ApplyStockPresentation(string trangThai)
+        {
+            bool isOutOfStock = !string.IsNullOrWhiteSpace(trangThai) && trangThai.Trim().Equals("Hết hàng", StringComparison.OrdinalIgnoreCase);
+
+            lblBadge.Visible = isOutOfStock;
+            nudQuantity.Enabled = !isOutOfStock;
+            btnAdd.Enabled = !isOutOfStock;
+            btnAdd.Text = isOutOfStock ? "Hết hàng" : "Thêm";
+            btnAdd.BackColor = isOutOfStock ? Color.Silver : Color.FromArgb(40, 167, 69);
+
+            this.BackColor = isOutOfStock ? Color.FromArgb(255, 245, 247) : Color.White;
+            this.BorderStyle = isOutOfStock ? BorderStyle.FixedSingle : BorderStyle.FixedSingle;
         }
     }
 

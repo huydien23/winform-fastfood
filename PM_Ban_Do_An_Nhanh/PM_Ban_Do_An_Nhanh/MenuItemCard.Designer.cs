@@ -25,6 +25,7 @@ namespace PM_Ban_Do_An_Nhanh
         private void InitializeComponent()
         {
             this.pbImage = new System.Windows.Forms.PictureBox();
+            this.lblBadge = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblPrice = new System.Windows.Forms.Label();
             this.nudQuantity = new System.Windows.Forms.NumericUpDown();
@@ -35,12 +36,26 @@ namespace PM_Ban_Do_An_Nhanh
             // 
             // pbImage
             // 
-            this.pbImage.Location = new System.Drawing.Point(8, 8);
+            this.pbImage.Location = new System.Drawing.Point(8, 20);
             this.pbImage.Name = "pbImage";
             this.pbImage.Size = new System.Drawing.Size(80, 60);
             this.pbImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pbImage.TabIndex = 0;
             this.pbImage.TabStop = false;
+            // 
+            // lblBadge
+            // 
+            this.lblBadge.AutoSize = true;
+            this.lblBadge.BackColor = System.Drawing.Color.FromArgb(220, 53, 69);
+            this.lblBadge.ForeColor = System.Drawing.Color.White;
+            this.lblBadge.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Bold);
+            this.lblBadge.Location = new System.Drawing.Point(8, 4);
+            this.lblBadge.Name = "lblBadge";
+            this.lblBadge.Padding = new System.Windows.Forms.Padding(6, 2, 6, 2);
+            this.lblBadge.Size = new System.Drawing.Size(78, 19);
+            this.lblBadge.TabIndex = 5;
+            this.lblBadge.Text = "HẾT HÀNG";
+            this.lblBadge.Visible = false;
             // 
             // lblTitle
             // 
@@ -95,6 +110,7 @@ namespace PM_Ban_Do_An_Nhanh
             this.BackColor = System.Drawing.Color.White;
             this.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.Controls.Add(this.pbImage);
+            this.Controls.Add(this.lblBadge);
             this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.lblPrice);
             this.Controls.Add(this.nudQuantity);
@@ -111,6 +127,7 @@ namespace PM_Ban_Do_An_Nhanh
         #endregion
 
         private System.Windows.Forms.PictureBox pbImage;
+        private System.Windows.Forms.Label lblBadge;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblPrice;
         private System.Windows.Forms.NumericUpDown nudQuantity;

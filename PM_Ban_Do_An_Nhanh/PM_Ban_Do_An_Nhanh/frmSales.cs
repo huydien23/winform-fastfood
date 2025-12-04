@@ -604,22 +604,17 @@ namespace PM_Ban_Do_An_Nhanh
                     int maMon = Convert.ToInt32(row["MaMon"]);
                     string tenMon = row["TenMon"].ToString();
                     decimal gia = Convert.ToDecimal(row["Gia"]);
+                    string trangThai = row["TrangThai"].ToString();
                     string imagePath = row.Table.Columns.Contains("HinhAnh") ? row["HinhAnh"].ToString() : null;
 
                     // Nếu chưa có đường dẫn ảnh, dùng hàm tìm ảnh cũ
                     if (string.IsNullOrEmpty(imagePath))
                         imagePath = FindImageForMon(tenMon);
 
-                    card.SetData(maMon, tenMon, gia, imagePath);
+                    card.SetData(maMon, tenMon, gia, imagePath, trangThai);
                     card.Width = 240;
                     card.Height = 104;
                     card.Margin = new Padding(8, 8, 8, 8);
-
-                    if (row["TrangThai"].ToString() == "Hết hàng")
-                    {
-                        card.Enabled = false;
-                        card.BackColor = Color.LightGray;
-                    }
 
                     card.AddClicked += (s, e) =>
                     {

@@ -36,12 +36,11 @@ namespace PM_Ban_Do_An_Nhanh.Helpers
                 DeleteOldImage(menuItemId);
 
                 // Copy và resize ảnh
-                using (var originalImage = Image.FromFile(sourceImagePath))
+                using (var fs = new FileStream(sourceImagePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var originalImage = Image.FromStream(fs))
+                using (var resizedImage = ResizeImage(originalImage, 300, 300))
                 {
-                    using (var resizedImage = ResizeImage(originalImage, 300, 300))
-                    {
-                        resizedImage.Save(destinationPath, GetImageFormat(extension));
-                    }
+                    resizedImage.Save(destinationPath, GetImageFormat(extension));
                 }
 
                 return Path.Combine("Images", "MenuItems", fileName); 
@@ -78,7 +77,11 @@ namespace PM_Ban_Do_An_Nhanh.Helpers
                 string fullPath = Path.Combine(Application.StartupPath, imagePath);
                 if (File.Exists(fullPath))
                 {
-                    return Image.FromFile(fullPath);
+                    using (var fs = new FileStream(fullPath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var img = Image.FromStream(fs))
+                    {
+                        return new Bitmap(img);
+                    }
                 }
             }
             catch (Exception)
