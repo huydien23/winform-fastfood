@@ -44,7 +44,7 @@ namespace PM_Ban_Do_An_Nhanh.Helpers
                     }
                 }
 
-                return Path.Combine("Images", "MenuItems", fileName); // Trả về đường dẫn tương đối
+                return Path.Combine("Images", "MenuItems", fileName); 
             }
             catch (Exception ex)
             {
@@ -66,7 +66,6 @@ namespace PM_Ban_Do_An_Nhanh.Helpers
             }
             catch (Exception)
             {
-                // Log error nhưng không throw để không ảnh hưởng đến việc xóa dữ liệu
             }
         }
 
