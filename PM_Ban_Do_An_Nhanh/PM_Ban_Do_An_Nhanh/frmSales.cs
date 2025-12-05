@@ -95,7 +95,7 @@ namespace PM_Ban_Do_An_Nhanh
                 // Create main split container for Order tab
                 SplitContainer mainSplit = new SplitContainer();
                 mainSplit.Dock = DockStyle.Fill;
-                mainSplit.SplitterDistance = 800;
+                
                 mainSplit.SplitterWidth = 8;
                 mainSplit.BackColor = Color.FromArgb(220, 221, 225);
                 mainSplit.Orientation = Orientation.Vertical;
@@ -108,6 +108,11 @@ namespace PM_Ban_Do_An_Nhanh
 
                 tabOrder.Controls.Clear();
                 tabOrder.Controls.Add(mainSplit);
+
+                // CRITICAL FIX: Set SplitterDistance AFTER adding to controls and setting Dock property
+                // This ensures the container has actual width before we try to set the splitter position
+                mainSplit.FixedPanel = FixedPanel.Panel1;
+                mainSplit.SplitterDistance = 820; // Increased to 820 to accommodate 3 columns + scrollbar
 
                 // Load data after UI is set up
                 LoadMonAnToPanel();
@@ -1041,9 +1046,56 @@ namespace PM_Ban_Do_An_Nhanh
 
         private void btnHuyDon_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Bạn có muốn hủy đơn hàng hiện tại không?", "Hủy đơn", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (currentOrderItems.Count == 0)
             {
+                MessageBox.Show("Không có đơn hàng nào để hủy.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Show input dialog for cancellation reason
+            string lyDoHuy = Microsoft.VisualBasic.Interaction.InputBox(
+                "Vui lòng nhập lý do hủy đơn hàng:\n\n(VD: Khách đổi ý, Nhập sai món, Hết nguyên liệu...)",
+                "Lý do hủy đơn",
+                "",
+                -1, -1
+            );
+
+            // If user cancelled or entered empty reason
+            if (string.IsNullOrWhiteSpace(lyDoHuy))
+            {
+                MessageBox.Show("Bạn phải nhập lý do để hủy đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Confirm cancellation
+            decimal tongTien = currentOrderItems.Sum(item => item.SoLuong * item.DonGia);
+            string confirmMessage = $"Xác nhận hủy đơn hàng?\n\n" +
+                                   $"Tổng tiền: {tongTien:N0} VNĐ\n" +
+                                   $"Số món: {currentOrderItems.Count}\n" +
+                                   $"Lý do: {lyDoHuy}\n\n" +
+                                   $"Hành động này không thể hoàn tác!";
+
+            if (MessageBox.Show(confirmMessage, "Xác nhận hủy đơn", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                // Log cancellation reason
+                LogHuyDon(lyDoHuy, tongTien);
+                
                 ClearOrder();
+                MessageBox.Show("Đã hủy đơn hàng thành công.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void LogHuyDon(string lyDo, decimal tongTien)
+        {
+            try
+            {
+                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "CancelledOrders.log");
+                string logEntry = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] Tổng tiền: {tongTien:N0} VNĐ | Lý do: {lyDo}\n";
+                File.AppendAllText(logPath, logEntry);
+            }
+            catch
+            {
+                // Silently fail if logging fails
             }
         }
 
