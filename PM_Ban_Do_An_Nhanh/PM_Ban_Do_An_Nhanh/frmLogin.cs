@@ -1,5 +1,6 @@
 ﻿using PM_Ban_Do_An_Nhanh.BLL;
 using PM_Ban_Do_An_Nhanh.Entities;
+using PM_Ban_Do_An_Nhanh.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,9 +42,12 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (loggedInUser != null)
                 {
+                    // Lưu vào cả GlobalVariables (backward compatibility) và SessionContext
                     GlobalVariables.LoggedInUser = loggedInUser;
+                    SessionContext.CurrentUser = loggedInUser;
 
-                    MessageBox.Show($"Chào mừng {loggedInUser.TenTK}!", "Đăng nhập thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string roleDisplay = loggedInUser.Role == "Admin" ? "Quản trị viên" : "Nhân viên";
+                    MessageBox.Show($"Chào mừng {loggedInUser.TenTK}!\nVai trò: {roleDisplay}", "Đăng nhập thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     frmMain mainForm = new frmMain();
                     mainForm.Show();

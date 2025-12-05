@@ -12,5 +12,8 @@ namespace PM_Ban_Do_An_Nhanh.Entities
         public string TenTK { get; set; }
         public string TenDangNhap { get; set; }
         public string MatKhau { get; set; }
+        public string Role { get; set; } // "Admin" hoặc "Staff"
+        public string Email { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 }

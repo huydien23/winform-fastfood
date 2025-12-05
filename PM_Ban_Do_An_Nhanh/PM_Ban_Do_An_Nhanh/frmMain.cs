@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PM_Ban_Do_An_Nhanh.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -19,6 +20,7 @@ namespace PM_Ban_Do_An_Nhanh
             InitializeComponent();
             this.Text = "Hệ thống quản lý bán thức ăn nhanh";
             HienThiThongTinNguoiDung();
+            ApplyRoleBasedPermissions();
 
             
             tabPageDanhMuc = new TabPage("Danh Mục");
@@ -27,9 +29,10 @@ namespace PM_Ban_Do_An_Nhanh
 
         private void HienThiThongTinNguoiDung()
         {
-            if (GlobalVariables.LoggedInUser != null)
+            if (SessionContext.IsLoggedIn)
             {
-                lblUserInfo.Text = $"Xin chào, {GlobalVariables.LoggedInUser.TenTK}";
+                string roleDisplay = SessionContext.IsAdmin ? "[Admin]" : "[Nhân viên]";
+                lblUserInfo.Text = $"Xin chào, {SessionContext.DisplayName}\n{roleDisplay}";
                 btnSales.Enabled = true;
                 btnMenuManagement.Enabled = true;
                 btnReport.Enabled = true;
@@ -40,6 +43,57 @@ namespace PM_Ban_Do_An_Nhanh
                 this.Hide();
                 frmLogin loginForm = new frmLogin();
                 loginForm.Show();
+            }
+        }
+
+        private void ApplyRoleBasedPermissions()
+        {
+            // Chỉ Admin mới thấy các chức năng quản lý
+            if (SessionContext.IsAdmin)
+            {
+                // Admin có full quyền
+                btnMenuManagement.Visible = true;
+                btnDanhMuc.Visible = true;
+                btnReport.Visible = true;
+                // Thêm button quản lý tài khoản cho Admin
+                AddUserManagementButton();
+            }
+            else if (SessionContext.IsStaff)
+            {
+                // Staff chỉ được bán hàng và xem khách hàng
+                btnMenuManagement.Visible = false;
+                btnDanhMuc.Visible = false;
+                btnReport.Visible = false;
+            }
+        }
+
+        private void AddUserManagementButton()
+        {
+            // Tạo button quản lý tài khoản động
+            Button btnUserManagement = new Button();
+            btnUserManagement.Name = "btnUserManagement";
+            btnUserManagement.Text = "Quản lý tài khoản";
+            btnUserManagement.Font = new Font("Arial", 10.2F, FontStyle.Bold);
+            btnUserManagement.Dock = DockStyle.Top;
+            btnUserManagement.Height = 46;
+            btnUserManagement.Click += BtnUserManagement_Click;
+            
+            // Thêm vào panel1, trước button Đăng xuất
+            panel1.Controls.Add(btnUserManagement);
+            btnUserManagement.BringToFront();
+        }
+
+        private void BtnUserManagement_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SessionContext.RequireAdmin();
+                frmUserManagement userMgmtForm = new frmUserManagement();
+                userMgmtForm.ShowDialog();
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show(ex.Message, "Không có quyền", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -76,6 +130,7 @@ namespace PM_Ban_Do_An_Nhanh
             if (MessageBox.Show("Bạn có muốn đăng xuất khỏi hệ thống không?", "Đăng xuất", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 GlobalVariables.LoggedInUser = null;
+                SessionContext.Logout();
                 this.Hide();
                 frmLogin loginForm = new frmLogin();
                 loginForm.Show();
