@@ -78,9 +78,24 @@ namespace PM_Ban_Do_An_Nhanh
             btnUserManagement.Height = 46;
             btnUserManagement.Click += BtnUserManagement_Click;
             
-            // Thêm vào panel1, trước button Đăng xuất
+            // Tạo spacer panel để có khoảng cách giống các button khác
+            Panel spacerPanel = new Panel();
+            spacerPanel.Dock = DockStyle.Top;
+            spacerPanel.Height = 29;
+            
+            // Thêm vào panel1
             panel1.Controls.Add(btnUserManagement);
-            btnUserManagement.BringToFront();
+            panel1.Controls.Add(spacerPanel);
+            
+            // Tìm vị trí của btnDanhMuc để đặt button mới ngay sau nó
+            int danhMucIndex = panel1.Controls.IndexOf(btnDanhMuc);
+            if (danhMucIndex >= 0)
+            {
+                // Đặt spacer ngay sau btnDanhMuc
+                panel1.Controls.SetChildIndex(spacerPanel, danhMucIndex);
+                // Đặt button ngay sau spacer
+                panel1.Controls.SetChildIndex(btnUserManagement, danhMucIndex);
+            }
         }
 
         private void BtnUserManagement_Click(object sender, EventArgs e)
