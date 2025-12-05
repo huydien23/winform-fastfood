@@ -14,5 +14,6 @@ namespace PM_Ban_Do_An_Nhanh.Entities
         public string DiaChi { get; set; }
         public string Email { get; set; }
         public DateTime? NgaySinh { get; set; }
+        public int DiemTichLuy { get; set; }
     }
 }

@@ -88,9 +88,9 @@ namespace PM_Ban_Do_An_Nhanh.BLL
             return donHangDAL.LayChiTietDonHangChoIn(maDH);
         }
 
-        public DataTable LayDanhSachDonHang(DateTime? tuNgay = null, DateTime? denNgay = null)
+        public DataTable LayDanhSachDonHang(DateTime? tuNgay = null, DateTime? denNgay = null, int? maKH = null)
         {
-            return donHangDAL.LayDanhSachDonHang(tuNgay, denNgay);
+            return donHangDAL.LayDanhSachDonHang(tuNgay, denNgay, maKH);
         }
 
         public DataTable LayThongKeDoanhThu(DateTime? tuNgay = null, DateTime? denNgay = null)

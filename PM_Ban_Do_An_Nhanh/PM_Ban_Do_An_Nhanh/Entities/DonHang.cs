@@ -15,5 +15,12 @@ namespace PM_Ban_Do_An_Nhanh.Entities
         public int? MaKH { get; set; }
         public string TenKhachHang { get; set; }
         public string SDTKhachHang { get; set; }
+        
+        // Discount support
+        public decimal? GiamGia { get; set; }
+        public string MoTaGiamGia { get; set; }
+        
+        // Helper property to calculate final total
+        public decimal TongTienSauGiam => TongTien - (GiamGia ?? 0);
     }
 }

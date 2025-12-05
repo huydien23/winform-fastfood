@@ -26,6 +26,14 @@ namespace PM_Ban_Do_An_Nhanh
         private System.Windows.Forms.Button btnPrint;
         private System.Windows.Forms.Button btnExportPdf;
         private System.Windows.Forms.TextBox txtSearchMenu;
+        private System.Windows.Forms.TextBox txtDiscount;
+        private System.Windows.Forms.Label lblDiscountAmount;
+        private System.Windows.Forms.Label lblFinalTotal;
+        private System.Windows.Forms.DateTimePicker dtpFromDate;
+        private System.Windows.Forms.DateTimePicker dtpToDate;
+        private System.Windows.Forms.ComboBox cboFilterKhachHang;
+        private System.Windows.Forms.Button btnFilterHistory;
+        private System.Windows.Forms.Button btnResetFilter;
 
         protected override void Dispose(bool disposing)
         {
@@ -59,6 +67,14 @@ namespace PM_Ban_Do_An_Nhanh
             this.btnPrint = new System.Windows.Forms.Button();
             this.btnExportPdf = new System.Windows.Forms.Button();
             this.txtSearchMenu = new System.Windows.Forms.TextBox();
+            this.txtDiscount = new System.Windows.Forms.TextBox();
+            this.lblDiscountAmount = new System.Windows.Forms.Label();
+            this.lblFinalTotal = new System.Windows.Forms.Label();
+            this.dtpFromDate = new System.Windows.Forms.DateTimePicker();
+            this.dtpToDate = new System.Windows.Forms.DateTimePicker();
+            this.cboFilterKhachHang = new System.Windows.Forms.ComboBox();
+            this.btnFilterHistory = new System.Windows.Forms.Button();
+            this.btnResetFilter = new System.Windows.Forms.Button();
 
             this.mainTabControl.SuspendLayout();
             this.tabOrder.SuspendLayout();

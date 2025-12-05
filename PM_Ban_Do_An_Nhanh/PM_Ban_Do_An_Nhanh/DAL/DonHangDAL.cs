@@ -26,8 +26,8 @@ namespace PM_Ban_Do_An_Nhanh.DAL
 
                     // Insert main order
                     string queryDonHang = @"
-                        INSERT INTO DonHang (NgayLap, TongTien, TrangThaiThanhToan, MaKH) 
-                        VALUES (@NgayLap, @TongTien, @TrangThaiThanhToan, @MaKH); 
+                        INSERT INTO DonHang (NgayLap, TongTien, TrangThaiThanhToan, MaKH, GiamGia, MoTaGiamGia) 
+                        VALUES (@NgayLap, @TongTien, @TrangThaiThanhToan, @MaKH, @GiamGia, @MoTaGiamGia); 
                         SELECT SCOPE_IDENTITY();";
 
                     using (SqlCommand cmdDonHang = new SqlCommand(queryDonHang, conn, transaction))
@@ -36,6 +36,8 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                         cmdDonHang.Parameters.AddWithValue("@TongTien", donHang.TongTien);
                         cmdDonHang.Parameters.AddWithValue("@TrangThaiThanhToan", donHang.TrangThaiThanhToan);
                         cmdDonHang.Parameters.AddWithValue("@MaKH", (object)donHang.MaKH ?? DBNull.Value);
+                        cmdDonHang.Parameters.AddWithValue("@GiamGia", (object)donHang.GiamGia ?? DBNull.Value);
+                        cmdDonHang.Parameters.AddWithValue("@MoTaGiamGia", (object)donHang.MoTaGiamGia ?? DBNull.Value);
 
                         object result = cmdDonHang.ExecuteScalar();
                         if (result != null && result != DBNull.Value)
@@ -160,6 +162,8 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                     dh.NgayLap,
                     dh.TongTien,
                     dh.TrangThaiThanhToan,
+                    dh.GiamGia,
+                    dh.MoTaGiamGia,
                     kh.TenKH,
                     kh.SDT AS SDT_KhachHang,
                     ma.TenMon,
@@ -186,7 +190,7 @@ namespace PM_Ban_Do_An_Nhanh.DAL
             return dt;
         }
 
-        public DataTable LayDanhSachDonHang(DateTime? tuNgay = null, DateTime? denNgay = null)
+        public DataTable LayDanhSachDonHang(DateTime? tuNgay = null, DateTime? denNgay = null, int? maKH = null)
         {
             DataTable dt = new DataTable();
             string query = @"
@@ -195,6 +199,8 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                     dh.NgayLap,
                     dh.TongTien,
                     dh.TrangThaiThanhToan,
+                    dh.GiamGia,
+                    dh.MoTaGiamGia,
                     kh.TenKH,
                     kh.SDT AS SDT_KhachHang
                 FROM DonHang dh
@@ -209,6 +215,10 @@ namespace PM_Ban_Do_An_Nhanh.DAL
             {
                 query += " AND CAST(dh.NgayLap AS DATE) <= @DenNgay";
             }
+            if (maKH.HasValue)
+            {
+                query += " AND dh.MaKH = @MaKH";
+            }
             query += " ORDER BY dh.NgayLap DESC";
 
             using (SqlConnection conn = DBConnection.GetConnection())
@@ -222,6 +232,10 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                     if (denNgay.HasValue)
                     {
                         cmd.Parameters.AddWithValue("@DenNgay", denNgay.Value.Date);
+                    }
+                    if (maKH.HasValue)
+                    {
+                        cmd.Parameters.AddWithValue("@MaKH", maKH.Value);
                     }
                     conn.Open();
                     SqlDataAdapter da = new SqlDataAdapter(cmd);

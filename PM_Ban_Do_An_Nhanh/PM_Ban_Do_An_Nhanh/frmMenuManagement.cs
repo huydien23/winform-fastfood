@@ -37,6 +37,7 @@ namespace PM_Ban_Do_An_Nhanh
             LoadDataToDataGridView();
             LoadDanhMucToComboBox();
             SetupTrangThaiComboBox();
+            SetupFilterControls();
             ClearInputFields();
             SetupButtonStyles();
             CaptureDefaultRowStyle();
@@ -440,6 +441,120 @@ namespace PM_Ban_Do_An_Nhanh
                         selectedImagePath = "";
                     }
                 }
+            }
+        }
+
+        private void SetupFilterControls()
+        {
+            try
+            {
+                // Setup search textbox với placeholder
+                txtSearch.Text = "🔍 Tìm kiếm món...";
+                txtSearch.ForeColor = Color.Gray;
+                
+                txtSearch.GotFocus += (s, e) =>
+                {
+                    if (txtSearch.Text == "🔍 Tìm kiếm món...")
+                    {
+                        txtSearch.Text = "";
+                        txtSearch.ForeColor = Color.Black;
+                    }
+                };
+                
+                txtSearch.LostFocus += (s, e) =>
+                {
+                    if (string.IsNullOrWhiteSpace(txtSearch.Text))
+                    {
+                        txtSearch.Text = "🔍 Tìm kiếm món...";
+                        txtSearch.ForeColor = Color.Gray;
+                    }
+                };
+                
+                txtSearch.TextChanged += (s, e) => FilterData();
+
+                // Setup category filter
+                cboFilterCategory.Items.Clear();
+                cboFilterCategory.Items.Add("Tất cả danh mục");
+                DataTable dtDanhMuc = danhMucBLL.LayDanhSachDanhMuc();
+                foreach (DataRow row in dtDanhMuc.Rows)
+                {
+                    cboFilterCategory.Items.Add(new FilterCategoryItem
+                    {
+                        MaDM = Convert.ToInt32(row["MaDM"]),
+                        TenDM = row["TenDM"].ToString()
+                    });
+                }
+                cboFilterCategory.DisplayMember = "TenDM";
+                cboFilterCategory.SelectedIndex = 0;
+                cboFilterCategory.SelectedIndexChanged += (s, e) => FilterData();
+
+                // Setup status filter
+                cboFilterStatus.Items.Clear();
+                cboFilterStatus.Items.Add("Tất cả trạng thái");
+                cboFilterStatus.Items.Add("Còn hàng");
+                cboFilterStatus.Items.Add("Hết hàng");
+                cboFilterStatus.SelectedIndex = 0;
+                cboFilterStatus.SelectedIndexChanged += (s, e) => FilterData();
+
+                // Apply style cho ô tìm kiếm, giữ ComboBox mặc định giống frmSales
+                ButtonStyleHelper.ApplyModernTextBoxStyle(txtSearch);
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi thiết lập bộ lọc: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void FilterData()
+        {
+            try
+            {
+                DataTable dt = monAnBLL.HienThiDanhSachMonAn();
+                DataView dv = dt.DefaultView;
+                
+                string filter = "1=1"; // Always true condition
+                
+                // Filter by search text
+                string searchText = txtSearch.Text.Trim();
+                if (!string.IsNullOrEmpty(searchText) && searchText != "🔍 Tìm kiếm món...")
+                {
+                    filter += $" AND TenMon LIKE '%{searchText.Replace("'", "''")}%'";
+                }
+                
+                // Filter by category
+                if (cboFilterCategory.SelectedIndex > 0 && cboFilterCategory.SelectedItem is FilterCategoryItem categoryItem)
+                {
+                    filter += $" AND MaDM = {categoryItem.MaDM}";
+                }
+                
+                // Filter by status
+                if (cboFilterStatus.SelectedIndex > 0)
+                {
+                    string status = cboFilterStatus.SelectedItem.ToString();
+                    filter += $" AND TrangThai = '{status.Replace("'", "''")}'";
+                }
+                
+                dv.RowFilter = filter;
+                dgvMonAn.DataSource = dv;
+                
+                ApplyHighlightForAllRows();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi lọc dữ liệu: " + ex.Message, "❌ Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Helper class for filter category items
+        public class FilterCategoryItem
+        {
+            public int MaDM { get; set; }
+            public string TenDM { get; set; }
+
+            public override string ToString()
+            {
+                return TenDM;
             }
         }
     }

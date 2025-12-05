@@ -45,6 +45,9 @@
             this.txtGia = new System.Windows.Forms.TextBox();
             this.txtTenMon = new System.Windows.Forms.TextBox();
             this.dgvMonAn = new System.Windows.Forms.DataGridView();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.cboFilterCategory = new System.Windows.Forms.ComboBox();
+            this.cboFilterStatus = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picHinhAnh)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvMonAn)).BeginInit();
@@ -222,20 +225,52 @@
             // dgvMonAn
             // 
             this.dgvMonAn.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvMonAn.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvMonAn.Location = new System.Drawing.Point(280, 0);
+            this.dgvMonAn.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgvMonAn.Location = new System.Drawing.Point(260, 45);
             this.dgvMonAn.Name = "dgvMonAn";
             this.dgvMonAn.RowHeadersWidth = 51;
             this.dgvMonAn.RowTemplate.Height = 24;
-            this.dgvMonAn.Size = new System.Drawing.Size(520, 593);
+            this.dgvMonAn.Size = new System.Drawing.Size(540, 548);
             this.dgvMonAn.TabIndex = 1;
             this.dgvMonAn.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvMonAn_CellClick);
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(280, 10);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(200, 22);
+            this.txtSearch.TabIndex = 2;
+            // 
+            // cboFilterCategory
+            // 
+            this.cboFilterCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cboFilterCategory.FormattingEnabled = true;
+            this.cboFilterCategory.Location = new System.Drawing.Point(490, 10);
+            this.cboFilterCategory.Name = "cboFilterCategory";
+            this.cboFilterCategory.Size = new System.Drawing.Size(150, 28);
+            this.cboFilterCategory.TabIndex = 3;
+            // 
+            // cboFilterStatus
+            // 
+            this.cboFilterStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboFilterStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.cboFilterStatus.FormattingEnabled = true;
+            this.cboFilterStatus.Location = new System.Drawing.Point(650, 10);
+            this.cboFilterStatus.Name = "cboFilterStatus";
+            this.cboFilterStatus.Size = new System.Drawing.Size(130, 28);
+            this.cboFilterStatus.TabIndex = 4;
             // 
             // frmMenuManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 593);
+            this.Controls.Add(this.cboFilterStatus);
+            this.Controls.Add(this.cboFilterCategory);
+            this.Controls.Add(this.txtSearch);
             this.Controls.Add(this.dgvMonAn);
             this.Controls.Add(this.panel1);
             this.Name = "frmMenuManagement";
@@ -267,5 +302,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.PictureBox picHinhAnh;
         private System.Windows.Forms.Button btnChonHinh;
+        private System.Windows.Forms.TextBox txtSearch;
+        private System.Windows.Forms.ComboBox cboFilterCategory;
+        private System.Windows.Forms.ComboBox cboFilterStatus;
     }
 }

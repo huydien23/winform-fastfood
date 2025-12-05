@@ -21,13 +21,19 @@ namespace PM_Ban_Do_An_Nhanh
         private MonAnBLL monAnBLL = new MonAnBLL();
         private DonHangBLL donHangBLL = new DonHangBLL();
         private KhachHangBLL khachHangBLL = new KhachHangBLL();
+        private DanhMucBLL danhMucBLL = new DanhMucBLL();
 
         private List<ChiTietDonHang> currentOrderItems = new List<ChiTietDonHang>();
         private KhachHang selectedCustomer = null;
         private int? selectedMaDH = null;
+        private decimal currentDiscount = 0; // Current discount amount
+        private string currentDiscountDescription = ""; // Discount description
 
         private bool isProcessingPayment = false;
         private DateTime lastPaymentTime = DateTime.MinValue;
+
+        private ComboBox cboFilterCategory;
+        private ComboBox cboFilterStatus;
 
         public frmSales()
         {
@@ -133,6 +139,25 @@ namespace PM_Ban_Do_An_Nhanh
             titleLabel.Size = new Size(180, 30);
             titleLabel.TextAlign = ContentAlignment.MiddleLeft;
 
+            // Filter Category ComboBox
+            cboFilterCategory = new ComboBox();
+            cboFilterCategory.Location = new Point(200, 22);
+            cboFilterCategory.Size = new Size(150, 28);
+            cboFilterCategory.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboFilterCategory.Font = new System.Drawing.Font("Segoe UI", 9F);
+            LoadCategoriesToComboBox();
+            cboFilterCategory.SelectedIndexChanged += (s, e) => FilterMenuItems(txtSearchMenu.Text.Trim().ToLowerInvariant());
+
+            // Filter Status ComboBox
+            cboFilterStatus = new ComboBox();
+            cboFilterStatus.Location = new Point(360, 22);
+            cboFilterStatus.Size = new Size(130, 28);
+            cboFilterStatus.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboFilterStatus.Font = new System.Drawing.Font("Segoe UI", 9F);
+            cboFilterStatus.Items.AddRange(new object[] { "Tất cả", "Còn hàng", "Hết hàng" });
+            cboFilterStatus.SelectedIndex = 0;
+            cboFilterStatus.SelectedIndexChanged += (s, e) => FilterMenuItems(txtSearchMenu.Text.Trim().ToLowerInvariant());
+
             // Search box
             txtSearchMenu.Location = new Point(parent.Width - 300, 19);
             txtSearchMenu.Size = new Size(280, 32);
@@ -168,7 +193,7 @@ namespace PM_Ban_Do_An_Nhanh
                 }
             };
 
-            headerPanel.Controls.AddRange(new Control[] { titleLabel, txtSearchMenu });
+            headerPanel.Controls.AddRange(new Control[] { titleLabel, cboFilterCategory, cboFilterStatus, txtSearchMenu });
 
             // Menu panel
             pnlMonAn.Location = new Point(0, 85); // 70px header + 15px margin
@@ -333,10 +358,10 @@ namespace PM_Ban_Do_An_Nhanh
 
             headerPanel.Controls.Add(titleLabel);
 
-            // Footer with actions (increased height to include total section)
+            // Footer with actions (increased height to include discount + total section)
             Panel footerPanel = CreateOrderFooterContent();
             footerPanel.Dock = DockStyle.Bottom;
-            footerPanel.Height = 240;
+            footerPanel.Height = 290; // 50 customer + 50 discount + 60 total + 50 order actions + 60 main actions + 20 padding
 
             // DataGridView for order list
             dgvOrderList.Dock = DockStyle.Fill;
@@ -414,6 +439,80 @@ namespace PM_Ban_Do_An_Nhanh
                 lblCustomerIcon, lblCustomerTitle, lblTenKhachHang, btnSelectCustomer
             });
 
+            // Discount section
+            Panel discountSection = new Panel();
+            discountSection.Dock = DockStyle.Top;
+            discountSection.Height = 50;
+            discountSection.BackColor = Color.FromArgb(255, 248, 220); // Light yellow
+            discountSection.Padding = new Padding(12, 8, 12, 8);
+
+            Label lblDiscountIcon = new Label();
+            lblDiscountIcon.Text = "🎫";
+            lblDiscountIcon.Font = new System.Drawing.Font("Segoe UI", 11F);
+            lblDiscountIcon.Location = new Point(12, 12);
+            lblDiscountIcon.Size = new Size(30, 25);
+
+            Label lblDiscountTitle = new Label();
+            lblDiscountTitle.Text = "Giảm giá:";
+            lblDiscountTitle.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            lblDiscountTitle.Location = new Point(45, 12);
+            lblDiscountTitle.Size = new Size(75, 25);
+            lblDiscountTitle.ForeColor = Color.FromArgb(156, 89, 0); // Brown
+
+            txtDiscount.Location = new Point(125, 11);
+            txtDiscount.Size = new Size(110, 28);
+            txtDiscount.Font = new System.Drawing.Font("Segoe UI", 10F);
+            txtDiscount.Text = "VD: 10% hoặc 50000";
+            txtDiscount.ForeColor = Color.Gray;
+            
+            // Implement placeholder behavior manually (PlaceholderText not available in .NET Framework 4.8)
+            txtDiscount.GotFocus += (s, e) =>
+            {
+                if (txtDiscount.Text == "VD: 10% hoặc 50000")
+                {
+                    txtDiscount.Text = "";
+                    txtDiscount.ForeColor = Color.Black;
+                }
+            };
+            txtDiscount.LostFocus += (s, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(txtDiscount.Text))
+                {
+                    txtDiscount.Text = "VD: 10% hoặc 50000";
+                    txtDiscount.ForeColor = Color.Gray;
+                }
+            };
+            txtDiscount.TextChanged += (s, e) =>
+            {
+                if (txtDiscount.Text != "VD: 10% hoặc 50000" && !string.IsNullOrWhiteSpace(txtDiscount.Text))
+                {
+                    ApplyDiscount();
+                }
+            };
+
+            Button btnApplyDiscount = new Button();
+            btnApplyDiscount.Text = "✓";
+            btnApplyDiscount.Size = new Size(35, 28);
+            btnApplyDiscount.Location = new Point(240, 11);
+            btnApplyDiscount.BackColor = Color.FromArgb(39, 174, 96);
+            btnApplyDiscount.ForeColor = Color.White;
+            btnApplyDiscount.FlatStyle = FlatStyle.Flat;
+            btnApplyDiscount.FlatAppearance.BorderSize = 0;
+            btnApplyDiscount.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            btnApplyDiscount.Cursor = Cursors.Hand;
+            btnApplyDiscount.Click += (s, e) => ApplyDiscount();
+
+            lblDiscountAmount.Text = "-0 VNĐ";
+            lblDiscountAmount.Location = new Point(285, 12);
+            lblDiscountAmount.Size = new Size(150, 25);
+            lblDiscountAmount.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            lblDiscountAmount.ForeColor = Color.FromArgb(192, 57, 43); // Red
+            lblDiscountAmount.TextAlign = ContentAlignment.MiddleLeft;
+
+            discountSection.Controls.AddRange(new Control[] {
+                lblDiscountIcon, lblDiscountTitle, txtDiscount, btnApplyDiscount, lblDiscountAmount
+            });
+
             // Order actions section
             Panel orderActionsSection = new Panel();
             orderActionsSection.Dock = DockStyle.Top;
@@ -479,7 +578,8 @@ namespace PM_Ban_Do_An_Nhanh
             
             // Then add top-docked controls (in order since first added appears at top)
             footer.Controls.Add(customerSection);     // Will be at top
-            footer.Controls.Add(totalSection);        // Will be below customer section
+            footer.Controls.Add(discountSection);     // Will be below customer section
+            footer.Controls.Add(totalSection);        // Will be below discount section
             footer.Controls.Add(orderActionsSection); // Will be below total section
 
             return footer;
@@ -538,6 +638,63 @@ namespace PM_Ban_Do_An_Nhanh
 
             headerPanel.Controls.Add(titleLabel);
 
+            // Filter panel
+            Panel filterPanel = new Panel();
+            filterPanel.Location = new Point(0, 80);
+            filterPanel.Size = new Size(tabHistory.Width, 70);
+            filterPanel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            filterPanel.BackColor = Color.FromArgb(245, 246, 250);
+            filterPanel.Padding = new Padding(20, 15, 20, 15);
+
+            Label lblFromDate = new Label();
+            lblFromDate.Text = "Từ ngày:";
+            lblFromDate.Location = new Point(20, 20);
+            lblFromDate.Size = new Size(70, 25);
+            lblFromDate.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+
+            dtpFromDate.Location = new Point(95, 18);
+            dtpFromDate.Size = new Size(150, 25);
+            dtpFromDate.Format = DateTimePickerFormat.Short;
+            dtpFromDate.Value = DateTime.Now.AddMonths(-1); // Default: 1 month ago
+
+            Label lblToDate = new Label();
+            lblToDate.Text = "Đến ngày:";
+            lblToDate.Location = new Point(260, 20);
+            lblToDate.Size = new Size(80, 25);
+            lblToDate.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+
+            dtpToDate.Location = new Point(345, 18);
+            dtpToDate.Size = new Size(150, 25);
+            dtpToDate.Format = DateTimePickerFormat.Short;
+            dtpToDate.Value = DateTime.Now;
+
+            btnFilterHistory.Text = "🔍 Lọc";
+            btnFilterHistory.Location = new Point(510, 15);
+            btnFilterHistory.Size = new Size(90, 32);
+            btnFilterHistory.BackColor = Color.FromArgb(52, 152, 219);
+            btnFilterHistory.ForeColor = Color.White;
+            btnFilterHistory.FlatStyle = FlatStyle.Flat;
+            btnFilterHistory.FlatAppearance.BorderSize = 0;
+            btnFilterHistory.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            btnFilterHistory.Cursor = Cursors.Hand;
+            btnFilterHistory.Click += btnFilterHistory_Click;
+
+            btnResetFilter.Text = "↻ Reset";
+            btnResetFilter.Location = new Point(610, 15);
+            btnResetFilter.Size = new Size(90, 32);
+            btnResetFilter.BackColor = Color.FromArgb(149, 165, 166);
+            btnResetFilter.ForeColor = Color.White;
+            btnResetFilter.FlatStyle = FlatStyle.Flat;
+            btnResetFilter.FlatAppearance.BorderSize = 0;
+            btnResetFilter.Font = new System.Drawing.Font("Segoe UI", 10F, FontStyle.Bold);
+            btnResetFilter.Cursor = Cursors.Hand;
+            btnResetFilter.Click += btnResetFilter_Click;
+
+            filterPanel.Controls.AddRange(new Control[] {
+                lblFromDate, dtpFromDate, lblToDate, dtpToDate,
+                btnFilterHistory, btnResetFilter
+            });
+
             // Action panel
             Panel actionPanel = new Panel();
             actionPanel.Location = new Point(0, tabHistory.Height - 60);
@@ -574,20 +731,24 @@ namespace PM_Ban_Do_An_Nhanh
             actionPanel.Controls.AddRange(new Control[] { btnPrint, btnExportPdf });
 
             // DataGridView
-            dgvHoaDon.Location = new Point(0, 95); // 80px header + 15px margin
-            dgvHoaDon.Size = new Size(tabHistory.Width, tabHistory.Height - 155); // 95px top + 60px bottom
+            dgvHoaDon.Location = new Point(0, 165); // 80px header + 70px filter + 15px margin
+            dgvHoaDon.Size = new Size(tabHistory.Width, tabHistory.Height - 225); // 165px top + 60px bottom
             dgvHoaDon.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            
+            // Add double-click event to show order details
+            dgvHoaDon.CellDoubleClick += dgvHoaDon_CellDoubleClick;
 
             // Add all controls to tab
-            tabHistory.Controls.AddRange(new Control[] { headerPanel, actionPanel, dgvHoaDon });
+            tabHistory.Controls.AddRange(new Control[] { headerPanel, filterPanel, actionPanel, dgvHoaDon });
 
             // Handle tab resize
             tabHistory.Resize += (s, e) =>
             {
                 headerPanel.Size = new Size(tabHistory.Width, 80);
+                filterPanel.Size = new Size(tabHistory.Width, 70);
                 actionPanel.Location = new Point(0, tabHistory.Height - 60);
                 actionPanel.Size = new Size(tabHistory.Width, 60);
-                dgvHoaDon.Size = new Size(tabHistory.Width, tabHistory.Height - 155);
+                dgvHoaDon.Size = new Size(tabHistory.Width, tabHistory.Height - 225);
             };
         }
 
@@ -728,13 +889,25 @@ namespace PM_Ban_Do_An_Nhanh
                 tongTien += thanhTien;
             }
             
-            // Cập nhật hiển thị tổng tiền
-            lblTongTien.Text = $"{tongTien:N0} VNĐ";
+            // Cập nhật hiển thị tổng tiền (sau giảm giá nếu có)
+            decimal tongSauGiam = tongTien - currentDiscount;
+            if (currentDiscount > 0)
+            {
+                lblTongTien.Text = $"{tongSauGiam:N0} VNĐ (Gốc: {tongTien:N0})";
+            }
+            else
+            {
+                lblTongTien.Text = $"{tongTien:N0} VNĐ";
+            }
         }
 
         private void ClearOrder()
         {
             currentOrderItems.Clear();
+            currentDiscount = 0;
+            currentDiscountDescription = "";
+            txtDiscount.Clear();
+            lblDiscountAmount.Text = "-0 VNĐ";
             UpdateOrderDisplay();
             ClearCustomerInfo();
             // Đặt lại tổng tiền về 0
@@ -746,6 +919,85 @@ namespace PM_Ban_Do_An_Nhanh
             txtSDTKhachHang.Clear();
             lblTenKhachHang.Text = "Khách lẻ";
             selectedCustomer = null;
+        }
+
+        private void ApplyDiscount()
+        {
+            try
+            {
+                string discountText = txtDiscount.Text.Trim();
+                
+                if (string.IsNullOrWhiteSpace(discountText))
+                {
+                    // Reset discount
+                    currentDiscount = 0;
+                    currentDiscountDescription = "";
+                    lblDiscountAmount.Text = "-0 VNĐ";
+                    UpdateOrderDisplay();
+                    return;
+                }
+
+                decimal tongTien = currentOrderItems.Sum(item => item.SoLuong * item.DonGia);
+                
+                if (tongTien == 0)
+                {
+                    MessageBox.Show("Vui lòng thêm món ăn trước khi áp dụng giảm giá.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Check if it's a percentage discount
+                if (discountText.EndsWith("%"))
+                {
+                    string percentText = discountText.Replace("%", "");
+                    if (decimal.TryParse(percentText, out decimal percent))
+                    {
+                        if (percent < 0 || percent > 100)
+                        {
+                            MessageBox.Show("Phần trăm giảm giá phải từ 0 đến 100.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        currentDiscount = tongTien * percent / 100;
+                        currentDiscountDescription = $"Giảm {percent}%";
+                    }
+                    else
+                    {
+                        MessageBox.Show("Phần trăm giảm giá không hợp lệ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                else
+                {
+                    // Try to parse as fixed amount
+                    if (decimal.TryParse(discountText, out decimal amount))
+                    {
+                        if (amount < 0)
+                        {
+                            MessageBox.Show("Số tiền giảm giá không thể âm.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        if (amount > tongTien)
+                        {
+                            MessageBox.Show("Số tiền giảm giá không thể lớn hơn tổng tiền đơn hàng.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        currentDiscount = amount;
+                        currentDiscountDescription = $"Giảm {amount:N0} VNĐ";
+                    }
+                    else
+                    {
+                        MessageBox.Show("Giá trị giảm giá không hợp lệ. Vui lòng nhập số hoặc phần trăm (VD: 10% hoặc 50000).", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                // Update UI
+                lblDiscountAmount.Text = $"-{currentDiscount:N0} VNĐ";
+                UpdateOrderDisplay();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi áp dụng giảm giá: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Keep all existing event handlers and methods...
@@ -825,8 +1077,15 @@ namespace PM_Ban_Do_An_Nhanh
                 return;
             }
 
+            decimal tongSauGiam = tongTien - currentDiscount;
             string confirmMessage = $"Xác nhận thanh toán đơn hàng:\n" +
-                                   $"Tổng tiền: {tongTien:N0} VNĐ\n";
+                                   $"Tổng cộng: {tongTien:N0} VNĐ\n";
+
+            if (currentDiscount > 0)
+            {
+                confirmMessage += $"Giảm giá: -{currentDiscount:N0} VNĐ ({currentDiscountDescription})\n";
+                confirmMessage += $"Thành tiền: {tongSauGiam:N0} VNĐ\n";
+            }
 
             if (selectedCustomer != null)
             {
@@ -856,7 +1115,9 @@ namespace PM_Ban_Do_An_Nhanh
                     NgayLap = DateTime.Now,
                     TongTien = tongTien,
                     TrangThaiThanhToan = "Đã thanh toán",
-                    MaKH = selectedCustomer?.MaKH
+                    MaKH = selectedCustomer?.MaKH,
+                    GiamGia = currentDiscount > 0 ? currentDiscount : (decimal?)null,
+                    MoTaGiamGia = !string.IsNullOrWhiteSpace(currentDiscountDescription) ? currentDiscountDescription : null
                 };
 
                 foreach (var item in currentOrderItems)
@@ -1053,6 +1314,32 @@ namespace PM_Ban_Do_An_Nhanh
             ExportHoaDonToPdf(selectedMaDH.Value);
         }
 
+        private void LoadCategoriesToComboBox()
+        {
+            try
+            {
+                cboFilterCategory.Items.Clear();
+                cboFilterCategory.Items.Add("Tất cả danh mục");
+                
+                DataTable dtDanhMuc = danhMucBLL.LayDanhSachDanhMuc();
+                foreach (DataRow row in dtDanhMuc.Rows)
+                {
+                    cboFilterCategory.Items.Add(new CategoryItem 
+                    { 
+                        MaDM = Convert.ToInt32(row["MaDM"]), 
+                        TenDM = row["TenDM"].ToString() 
+                    });
+                }
+                cboFilterCategory.DisplayMember = "TenDM";
+                cboFilterCategory.ValueMember = "MaDM";
+                cboFilterCategory.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tải danh mục: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private void FilterMenuItems(string searchText)
         {
             try
@@ -1060,12 +1347,33 @@ namespace PM_Ban_Do_An_Nhanh
                 pnlMonAn.Controls.Clear();
 
                 DataTable dtMonAn = monAnBLL.HienThiDanhSachMonAn();
+                
+                // Get selected category
+                int? selectedCategoryId = null;
+                if (cboFilterCategory != null && cboFilterCategory.SelectedIndex > 0 && cboFilterCategory.SelectedItem is CategoryItem)
+                {
+                    selectedCategoryId = ((CategoryItem)cboFilterCategory.SelectedItem).MaDM;
+                }
+
+                // Get selected status
+                string selectedStatus = null;
+                if (cboFilterStatus != null && cboFilterStatus.SelectedIndex > 0)
+                {
+                    selectedStatus = cboFilterStatus.SelectedItem.ToString();
+                }
 
                 foreach (DataRow row in dtMonAn.Rows)
                 {
                     string tenMon = row["TenMon"].ToString().ToLowerInvariant();
+                    int maDM = Convert.ToInt32(row["MaDM"]);
+                    string trangThai = row["TrangThai"].ToString();
+                    
+                    // Filter by search text, category, and status
+                    bool matchSearch = string.IsNullOrEmpty(searchText) || searchText == "tìm kiếm món ăn..." || tenMon.Contains(searchText);
+                    bool matchCategory = !selectedCategoryId.HasValue || maDM == selectedCategoryId.Value;
+                    bool matchStatus = string.IsNullOrEmpty(selectedStatus) || trangThai == selectedStatus;
 
-                    if (string.IsNullOrEmpty(searchText) || tenMon.Contains(searchText))
+                    if (matchSearch && matchCategory && matchStatus)
                     {
                         var card = new MenuItemCard();
                         int maMon = Convert.ToInt32(row["MaMon"]);
@@ -1081,7 +1389,7 @@ namespace PM_Ban_Do_An_Nhanh
                         card.Height = 104;
                         card.Margin = new Padding(6);
 
-                        if (row["TrangThai"].ToString() == "Hết hàng")
+                        if (trangThai == "Hết hàng")
                         {
                             card.Enabled = false;
                             card.BackColor = Color.LightGray;
@@ -1106,6 +1414,18 @@ namespace PM_Ban_Do_An_Nhanh
             pnlMonAn.VerticalScroll.Value = 0;
             pnlMonAn.PerformLayout();
             pnlMonAn.Refresh();
+        }
+
+        // Helper class for ComboBox category items
+        public class CategoryItem
+        {
+            public int MaDM { get; set; }
+            public string TenDM { get; set; }
+
+            public override string ToString()
+            {
+                return TenDM;
+            }
         }
 
         private string FindImageForMon(string tenMon)
@@ -1191,7 +1511,29 @@ namespace PM_Ban_Do_An_Nhanh
                                                     Convert.ToDecimal(row["ThanhTien"]));
                     }
                     hoaDonText += "----------------------------------------\n";
-                    hoaDonText += $"Tổng cộng: {Convert.ToDecimal(dtHoaDon.Rows[0]["TongTien"]):N0} VNĐ\n";
+                    
+                    decimal tongTien = Convert.ToDecimal(dtHoaDon.Rows[0]["TongTien"]);
+                    hoaDonText += $"Tổng cộng: {tongTien:N0} VNĐ\n";
+                    
+                    // Hiển thị giảm giá nếu có
+                    if (dtHoaDon.Rows[0].Table.Columns.Contains("GiamGia") && 
+                        dtHoaDon.Rows[0]["GiamGia"] != DBNull.Value)
+                    {
+                        decimal giamGia = Convert.ToDecimal(dtHoaDon.Rows[0]["GiamGia"]);
+                        string moTaGiamGia = dtHoaDon.Rows[0]["MoTaGiamGia"] != DBNull.Value 
+                            ? dtHoaDon.Rows[0]["MoTaGiamGia"].ToString() 
+                            : "";
+                        
+                        hoaDonText += $"Giảm giá: -{giamGia:N0} VNĐ";
+                        if (!string.IsNullOrWhiteSpace(moTaGiamGia))
+                        {
+                            hoaDonText += $" ({moTaGiamGia})";
+                        }
+                        hoaDonText += "\n";
+                        hoaDonText += "----------------------------------------\n";
+                        hoaDonText += $"Thành tiền: {(tongTien - giamGia):N0} VNĐ\n";
+                    }
+                    
                     hoaDonText += "========================================\n";
                     hoaDonText += "Cảm ơn quý khách và hẹn gặp lại!\n";
 
@@ -1305,6 +1647,146 @@ namespace PM_Ban_Do_An_Nhanh
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi khi tải danh sách hóa đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnFilterHistory_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                DateTime fromDate = dtpFromDate.Value.Date;
+                DateTime toDate = dtpToDate.Value.Date.AddDays(1).AddSeconds(-1); // End of day
+
+                if (fromDate > toDate)
+                {
+                    MessageBox.Show("Ngày bắt đầu không thể lớn hơn ngày kết thúc.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Call BLL to get filtered data (without customer filter)
+                DataTable filteredData = donHangBLL.LayDanhSachDonHang(fromDate, toDate);
+                dgvHoaDon.DataSource = filteredData;
+
+                // Update column headers
+                if (filteredData.Columns.Contains("MaDH"))
+                    dgvHoaDon.Columns["MaDH"].HeaderText = "Mã HĐ";
+                if (filteredData.Columns.Contains("NgayLap"))
+                    dgvHoaDon.Columns["NgayLap"].HeaderText = "Ngày Lập";
+                if (filteredData.Columns.Contains("TongTien"))
+                    dgvHoaDon.Columns["TongTien"].HeaderText = "Tổng Tiền";
+                if (filteredData.Columns.Contains("TrangThaiThanhToan"))
+                    dgvHoaDon.Columns["TrangThaiThanhToan"].HeaderText = "Trạng Thái Thanh Toán";
+
+                MessageBox.Show($"Đã lọc {filteredData.Rows.Count} đơn hàng.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi lọc danh sách hóa đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnResetFilter_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Reset to default values
+                dtpFromDate.Value = DateTime.Now.AddMonths(-1);
+                dtpToDate.Value = DateTime.Now;
+
+                // Reload all data
+                LoadHoaDonToGrid();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi reset bộ lọc: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void dgvHoaDon_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex < 0) return;
+
+                if (dgvHoaDon.Rows[e.RowIndex].Cells["MaDH"].Value == null) return;
+
+                int maDH = Convert.ToInt32(dgvHoaDon.Rows[e.RowIndex].Cells["MaDH"].Value);
+                HienThiChiTietHoaDon(maDH);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi hiển thị chi tiết hóa đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void HienThiChiTietHoaDon(int maDH)
+        {
+            try
+            {
+                DataTable dtHoaDon = donHangBLL.LayChiTietDonHangChoIn(maDH);
+
+                if (dtHoaDon.Rows.Count == 0)
+                {
+                    MessageBox.Show("Không tìm thấy chi tiết hóa đơn.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                // Build detail message
+                string detailText = "═══════════ CHI TIẾT HÓA ĐƠN ═══════════\n\n";
+                detailText += $"🔖 Mã HĐ: {dtHoaDon.Rows[0]["MaDH"]}\n";
+                detailText += $"📅 Ngày: {Convert.ToDateTime(dtHoaDon.Rows[0]["NgayLap"]).ToString("dd/MM/yyyy HH:mm")}\n";
+
+                if (dtHoaDon.Rows[0]["TenKH"] != DBNull.Value)
+                {
+                    detailText += $"👤 Khách hàng: {dtHoaDon.Rows[0]["TenKH"]}\n";
+                    detailText += $"📞 SĐT: {dtHoaDon.Rows[0]["SDT_KhachHang"]}\n";
+                }
+                else
+                {
+                    detailText += "👤 Khách hàng: Khách lẻ\n";
+                }
+
+                detailText += "\n" + new string('─', 50) + "\n";
+                detailText += "DANH SÁCH MÓN ĂN:\n";
+                detailText += new string('─', 50) + "\n\n";
+
+                foreach (DataRow row in dtHoaDon.Rows)
+                {
+                    detailText += $"🍔 {row["TenMon"]}\n";
+                    detailText += $"   SL: {row["SoLuong"]}  |  Giá: {Convert.ToDecimal(row["DonGia"]):N0} VNĐ  |  TT: {Convert.ToDecimal(row["ThanhTien"]):N0} VNĐ\n\n";
+                }
+
+                detailText += new string('─', 50) + "\n";
+
+                decimal tongTien = Convert.ToDecimal(dtHoaDon.Rows[0]["TongTien"]);
+                detailText += $"💰 Tổng cộng: {tongTien:N0} VNĐ\n";
+
+                // Hiển thị giảm giá nếu có
+                if (dtHoaDon.Rows[0].Table.Columns.Contains("GiamGia") &&
+                    dtHoaDon.Rows[0]["GiamGia"] != DBNull.Value)
+                {
+                    decimal giamGia = Convert.ToDecimal(dtHoaDon.Rows[0]["GiamGia"]);
+                    string moTaGiamGia = dtHoaDon.Rows[0]["MoTaGiamGia"] != DBNull.Value
+                        ? dtHoaDon.Rows[0]["MoTaGiamGia"].ToString()
+                        : "";
+
+                    detailText += $"🎫 Giảm giá: -{giamGia:N0} VNĐ";
+                    if (!string.IsNullOrWhiteSpace(moTaGiamGia))
+                    {
+                        detailText += $" ({moTaGiamGia})";
+                    }
+                    detailText += "\n";
+                    detailText += new string('─', 50) + "\n";
+                    detailText += $"✅ Thành tiền: {(tongTien - giamGia):N0} VNĐ\n";
+                }
+
+                detailText += "\n" + new string('═', 50);
+
+                MessageBox.Show(detailText, "Chi tiết hóa đơn #" + maDH, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khi tải chi tiết hóa đơn: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

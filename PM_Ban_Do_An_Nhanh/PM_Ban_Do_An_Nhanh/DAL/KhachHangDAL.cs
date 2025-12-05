@@ -116,5 +116,93 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                 }
             }
         }
+
+        public DataTable LayLichSuDonHang(int maKH)
+        {
+            DataTable dt = new DataTable();
+            string query = @"
+                SELECT 
+                    dh.MaDH,
+                    dh.NgayLap,
+                    dh.TongTien, 
+                    dh.TrangThai
+                FROM DonHang dh
+                WHERE dh.MaKH = @MaKH
+                ORDER BY dh.NgayLap DESC";
+            
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@MaKH", maKH);
+                    conn.Open();
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        public DataTable LayChiTietDonHang(int maDH)
+        {
+            DataTable dt = new DataTable();
+            string query = @"
+                SELECT 
+                    ma.TenMon,
+                    ctdh.SoLuong,
+                    ctdh.DonGia,
+                    (ctdh.SoLuong * ctdh.DonGia) AS ThanhTien
+                FROM ChiTietDonHang ctdh
+                INNER JOIN MonAn ma ON ctdh.MaMon = ma.MaMon
+                WHERE ctdh.MaDH = @MaDH";
+            
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@MaDH", maDH);
+                    conn.Open();
+                    SqlDataAdapter da = new SqlDataAdapter(cmd);
+                    da.Fill(dt);
+                }
+            }
+            return dt;
+        }
+
+        public bool CapNhatDiemTichLuy(int maKH, int diem)
+        {
+            string query = "UPDATE KhachHang SET DiemTichLuy = @Diem WHERE MaKH = @MaKH";
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Diem", diem);
+                    cmd.Parameters.AddWithValue("@MaKH", maKH);
+                    conn.Open();
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+
+        public int LayDiemTichLuy(int maKH)
+        {
+            int diem = 0;
+            string query = "SELECT DiemTichLuy FROM KhachHang WHERE MaKH = @MaKH";
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@MaKH", maKH);
+                    conn.Open();
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        diem = Convert.ToInt32(result);
+                    }
+                }
+            }
+            return diem;
+        }
     }
 }
