@@ -19,12 +19,99 @@ namespace PM_Ban_Do_An_Nhanh
         {
             InitializeComponent();
             this.Text = "Hệ thống quản lý bán thức ăn nhanh";
+            this.WindowState = FormWindowState.Maximized; // Responsive layout
+            this.KeyPreview = true; // Enable keyboard shortcuts
             HienThiThongTinNguoiDung();
             ApplyRoleBasedPermissions();
+            SetupTooltips(); // Setup tooltips
 
             
             tabPageDanhMuc = new TabPage("Danh Mục");
             tabControlMain.TabPages.Add(tabPageDanhMuc);
+        }
+
+        private void SetupTooltips()
+        {
+            toolTip1.AutoPopDelay = 5000;
+            toolTip1.InitialDelay = 500;
+            toolTip1.ReshowDelay = 100;
+            toolTip1.ShowAlways = true;
+
+            // Navigation buttons
+            toolTip1.SetToolTip(btnSales, "Quản lý bán hàng và đơn hàng (F2)");
+            toolTip1.SetToolTip(btnKhachHang, "Quản lý thông tin khách hàng (F3)");
+            toolTip1.SetToolTip(btnMenuManagement, "Quản lý món ăn và thực đơn (F4)");
+            toolTip1.SetToolTip(btnReport, "Xem báo cáo và thống kê (F6)");
+            toolTip1.SetToolTip(btnDanhMuc, "Quản lý danh mục món ăn (F7 - Admin)");
+            toolTip1.SetToolTip(btnLogout, "Đăng xuất khỏi hệ thống");
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            // F-keys shortcuts
+            switch (keyData)
+            {
+                case Keys.F2: // Bán hàng
+                    if (btnSales.Enabled)
+                    {
+                        btnSales_Click(null, null);
+                        return true;
+                    }
+                    break;
+
+                case Keys.F3: // Khách hàng
+                    if (btnKhachHang.Enabled)
+                    {
+                        btnKhachHang_Click(null, null);
+                        return true;
+                    }
+                    break;
+
+                case Keys.F4: // Quản lý món ăn
+                    if (btnMenuManagement.Enabled && btnMenuManagement.Visible)
+                    {
+                        btnMenuManagement_Click(null, null);
+                        return true;
+                    }
+                    break;
+
+                case Keys.F5: // Refresh current tab
+                    RefreshCurrentTab();
+                    return true;
+
+                case Keys.F6: // Báo cáo
+                    if (btnReport.Enabled && btnReport.Visible)
+                    {
+                        btnReport_Click(null, null);
+                        return true;
+                    }
+                    break;
+
+                case Keys.F7: // Danh mục (Admin only)
+                    if (btnDanhMuc != null && btnDanhMuc.Visible)
+                    {
+                        btnDanhMuc_Click(null, null);
+                        return true;
+                    }
+                    break;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void RefreshCurrentTab()
+        {
+            // Refresh data in current active tab
+            if (tabControlMain.SelectedTab != null)
+            {
+                foreach (Control ctrl in tabControlMain.SelectedTab.Controls)
+                {
+                    if (ctrl is Form form && form.GetType().GetMethod("LoadData") != null)
+                    {
+                        form.GetType().GetMethod("LoadData").Invoke(form, null);
+                    }
+                }
+            }
         }
 
         private void HienThiThongTinNguoiDung()

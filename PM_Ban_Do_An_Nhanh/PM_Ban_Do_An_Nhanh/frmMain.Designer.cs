@@ -47,6 +47,7 @@
             this.tabPageMenu = new System.Windows.Forms.TabPage();
             this.tabPageReport = new System.Windows.Forms.TabPage();
             this.btnDanhMuc = new System.Windows.Forms.Button();
+            this.toolTip1 = new System.Windows.Forms.ToolTip();
             this.panel1.SuspendLayout();
             this.panel5.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -301,5 +302,6 @@
         private System.Windows.Forms.TabPage tabPageCustomer;
         private System.Windows.Forms.TabPage tabPageReport;
         private System.Windows.Forms.Button btnDanhMuc;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

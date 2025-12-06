@@ -118,6 +118,11 @@
     </Compile>
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\AuditLogger.cs" />
+    <Compile Include="Helpers\CacheManager.cs" />
+    <Compile Include="Helpers\ErrorHandler.cs" />
+    <Compile Include="Helpers\LoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Helpers\SessionContext.cs" />
     <Compile Include="frmUserManagement.cs">
       <SubType>Form</SubType>
