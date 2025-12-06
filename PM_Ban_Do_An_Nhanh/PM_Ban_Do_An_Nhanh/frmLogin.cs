@@ -1,4 +1,5 @@
 ﻿using PM_Ban_Do_An_Nhanh.BLL;
+using PM_Ban_Do_An_Nhanh.DAL;
 using PM_Ban_Do_An_Nhanh.Entities;
 using PM_Ban_Do_An_Nhanh.Helpers;
 using System;
@@ -38,16 +39,36 @@ namespace PM_Ban_Do_An_Nhanh
 
             try
             {
+                // Kiểm tra tài khoản có bị khóa không
+                var lockInfo = new TaiKhoanDAL().IsAccountLocked(username);
+                if (lockInfo.IsLocked)
+                {
+                    TimeSpan timeRemaining = lockInfo.LockedUntil.Value - DateTime.Now;
+                    int minutesRemaining = (int)Math.Ceiling(timeRemaining.TotalMinutes);
+                    MessageBox.Show(
+                        $"⚠️ Tài khoản đã bị khóa do đăng nhập sai quá nhiều lần.\n\n" +
+                        $"Thời gian còn lại: {minutesRemaining} phút\n\n" +
+                        $"Vui lòng thử lại sau.",
+                        "Tài khoản bị khóa",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning
+                    );
+                    return;
+                }
+
                 TaiKhoan loggedInUser = taiKhoanBLL.KiemTraDangNhap(username, password);
 
                 if (loggedInUser != null)
                 {
+                    // Reset failed attempts khi login thành công
+                    new TaiKhoanDAL().ResetFailedAttempts(username);
+                    
                     // Lưu vào cả GlobalVariables (backward compatibility) và SessionContext
                     GlobalVariables.LoggedInUser = loggedInUser;
                     SessionContext.CurrentUser = loggedInUser;
 
                     string roleDisplay = loggedInUser.Role == "Admin" ? "Quản trị viên" : "Nhân viên";
-                    MessageBox.Show($"Chào mừng {loggedInUser.TenTK}!\nVai trò: {roleDisplay}", "Đăng nhập thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($"Chào mừng {loggedInUser.TenTK}!\\nVai trò: {roleDisplay}", "Đăng nhập thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     frmMain mainForm = new frmMain();
                     mainForm.Show();
@@ -55,13 +76,45 @@ namespace PM_Ban_Do_An_Nhanh
                 }
                 else
                 {
-                    MessageBox.Show("Tên đăng nhập hoặc mật khẩu không đúng.", "Lỗi đăng nhập", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Tăng failed attempts khi login sai
+                    new TaiKhoanDAL().IncrementFailedAttempts(username);
+                    
+                    // Lấy thông tin số lần sai hiện tại
+                    var info = new TaiKhoanDAL().IsAccountLocked(username);
+                    int remainingAttempts = 5 - info.FailedAttempts;
+                    
+                    if (remainingAttempts > 0)
+                    {
+                        MessageBox.Show(
+                            $"❌ Tên đăng nhập hoặc mật khẩu không đúng.\n\n" +
+                            $"Số lần thử còn lại: {remainingAttempts}\n" +
+                            $"⚠️ Tài khoản sẽ bị khóa 15 phút sau 5 lần sai.",
+                            "Lỗi đăng nhập",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error
+                        );
+                    }
+                    else
+                    {
+                        MessageBox.Show(
+                            $"⚠️ Tài khoản đã bị khóa do đăng nhập sai 5 lần.\n\n" +
+                            $"Vui lòng thử lại sau 15 phút.",
+                            "Tài khoản bị khóa",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning
+                        );
+                    }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Lỗi kết nối hoặc xử lý dữ liệu: " + ex.Message, "Lỗi hệ thống", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void chkShowPassword_CheckedChanged(object sender, EventArgs e)
+        {
+            txtPassword.UseSystemPasswordChar = !chkShowPassword.Checked;
         }
 
         private void frmLogin_FormClosing(object sender, FormClosingEventArgs e)

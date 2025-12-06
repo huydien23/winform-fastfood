@@ -73,7 +73,6 @@ namespace PM_Ban_Do_An_Nhanh
 
             // Create 4 cards
             int cardWidth = 220;
-            int cardHeight = 90;
             int spacing = 20;
 
             cardDoanhThuHomNay = CreateDashboardCard("💰 Doanh thu hôm nay", "0 VNĐ", Color.FromArgb(46, 204, 113), 10);

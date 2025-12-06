@@ -156,5 +156,70 @@ namespace PM_Ban_Do_An_Nhanh.DAL
                 }
             }
         }
+
+        // Tăng số lần đăng nhập sai và khóa tài khoản nếu >= 5 lần
+        public void IncrementFailedAttempts(string tenDangNhap)
+        {
+            string query = @"
+                UPDATE TaiKhoan 
+                SET FailedLoginAttempts = FailedLoginAttempts + 1,
+                    LastFailedLoginTime = GETDATE(),
+                    LockedUntil = CASE 
+                        WHEN FailedLoginAttempts >= 4 THEN DATEADD(MINUTE, 15, GETDATE())
+                        ELSE LockedUntil
+                    END
+                WHERE TenDangNhap = @TenDangNhap";
+            
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TenDangNhap", tenDangNhap);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Reset số lần đăng nhập sai khi login thành công
+        public void ResetFailedAttempts(string tenDangNhap)
+        {
+            string query = "UPDATE TaiKhoan SET FailedLoginAttempts = 0, LockedUntil = NULL WHERE TenDangNhap = @TenDangNhap";
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TenDangNhap", tenDangNhap);
+                    conn.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Kiểm tra tài khoản có bị khóa không
+        public AccountLockInfo IsAccountLocked(string tenDangNhap)
+        {
+            string query = "SELECT LockedUntil, FailedLoginAttempts FROM TaiKhoan WHERE TenDangNhap = @TenDangNhap";
+            using (SqlConnection conn = DBConnection.GetConnection())
+            {
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@TenDangNhap", tenDangNhap);
+                    conn.Open();
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            DateTime? lockedUntil = reader["LockedUntil"] != DBNull.Value ? (DateTime?)reader["LockedUntil"] : null;
+                            int failedAttempts = reader["FailedLoginAttempts"] != DBNull.Value ? Convert.ToInt32(reader["FailedLoginAttempts"]) : 0;
+                            
+                            bool isLocked = lockedUntil.HasValue && lockedUntil.Value > DateTime.Now;
+                            return new AccountLockInfo(isLocked, lockedUntil, failedAttempts);
+                        }
+                    }
+                }
+            }
+            return new AccountLockInfo(false, null, 0);
+        }
     }
 }

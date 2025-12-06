@@ -141,6 +141,9 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (taiKhoanBLL.ThemTaiKhoan(tk))
                 {
+                    // Log audit
+                    AuditLogger.LogCreate("TaiKhoan", 0, tk.TenDangNhap, $"Tạo tài khoản: {tk.TenTK} ({tk.Role})");
+                    
                     MessageBox.Show("Thêm tài khoản thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadData();
                     ClearForm();
@@ -174,6 +177,12 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (taiKhoanBLL.SuaTaiKhoan(tk))
                 {
+                    // Log audit
+                    AuditLogger.LogUpdate("TaiKhoan", selectedMaTK, 
+                        $"Old: {txtTenDangNhap.Text}", 
+                        $"New: {tk.TenTK} ({tk.Role})", 
+                        $"Cập nhật tài khoản: {tk.TenDangNhap}");
+                    
                     MessageBox.Show("Cập nhật tài khoản thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadData();
                     ClearForm();
@@ -208,6 +217,9 @@ namespace PM_Ban_Do_An_Nhanh
 
                 if (taiKhoanBLL.DoiMatKhau(selectedMaTK, newPassword))
                 {
+                    // Log audit
+                    AuditLogger.Log("UPDATE", "TaiKhoan", selectedMaTK, null, "***", "Đổi mật khẩu");
+                    
                     MessageBox.Show("Đổi mật khẩu thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -241,6 +253,13 @@ namespace PM_Ban_Do_An_Nhanh
                 {
                     if (taiKhoanBLL.ToggleActiveStatus(selectedMaTK, newStatus))
                     {
+                        // Log audit
+                        string actionDesc = newStatus ? "Mở khóa" : "Khóa";
+                        AuditLogger.Log("UPDATE", "TaiKhoan", selectedMaTK, 
+                            chkIsActive.Checked.ToString(), 
+                            newStatus.ToString(), 
+                            $"{actionDesc} tài khoản");
+                        
                         MessageBox.Show($"Đã {action} tài khoản thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         LoadData();
                         ClearForm();

@@ -15,5 +15,10 @@ namespace PM_Ban_Do_An_Nhanh.Entities
         public string Role { get; set; } // "Admin" hoặc "Staff"
         public string Email { get; set; }
         public bool IsActive { get; set; } = true;
+        
+        // Login attempt tracking
+        public int FailedLoginAttempts { get; set; } = 0;
+        public DateTime? LastFailedLoginTime { get; set; }
+        public DateTime? LockedUntil { get; set; }
     }
 }

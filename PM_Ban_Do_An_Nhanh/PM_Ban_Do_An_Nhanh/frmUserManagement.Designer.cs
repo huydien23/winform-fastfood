@@ -305,10 +305,11 @@ namespace PM_Ban_Do_An_Nhanh
             // lblTotal
             // 
             this.lblTotal.AutoSize = true;
-            this.lblTotal.Font = new System.Drawing.Font("Arial", 10F, System.Drawing.FontStyle.Bold);
-            this.lblTotal.Location = new System.Drawing.Point(20, 25);
+            this.lblTotal.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Bold);
+            this.lblTotal.ForeColor = System.Drawing.Color.Gray;
+            this.lblTotal.Location = new System.Drawing.Point(20, 5);
             this.lblTotal.Name = "lblTotal";
-            this.lblTotal.Size = new System.Drawing.Size(100, 16);
+            this.lblTotal.Size = new System.Drawing.Size(80, 15);
             this.lblTotal.TabIndex = 6;
             this.lblTotal.Text = "Tổng số: 0";
             // 
